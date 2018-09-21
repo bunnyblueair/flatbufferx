@@ -5,14 +5,14 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import com.sun.tools.javac.code.Symbol;
 import io.flatbufferx.core.FlatBufferSrc;
 
+import javax.lang.model.element.TypeParameterElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import javax.lang.model.element.TypeParameterElement;
 
 public class JsonObjectHolder {
 
@@ -28,6 +28,7 @@ public class JsonObjectHolder {
     public final boolean serializeNullObjects;
     public final boolean serializeNullCollectionElements;
     public final List<? extends TypeParameterElement> typeParameters;
+    public List<Symbol.VarSymbol> createFlatBufferMethodArgs;
     public String onCompleteCallback;
     public String preSerializeCallback;
 

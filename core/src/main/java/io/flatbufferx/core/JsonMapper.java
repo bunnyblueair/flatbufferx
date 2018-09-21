@@ -3,6 +3,7 @@ package io.flatbufferx.core;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.google.flatbuffers.Table;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +16,9 @@ import java.util.Map;
 
 /** The class that handles all parsing and serialization of @JsonObject's */
 public abstract class JsonMapper<T> {
-
+    public  Table  toFlatBuffer(T object) throws IOException{
+        return null;
+    };
     /**
      * Parse an object from a pre-configured JsonParser object.
      *
