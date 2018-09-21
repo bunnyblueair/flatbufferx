@@ -31,6 +31,7 @@ public class JsonObjectHolder {
     public List<Symbol.VarSymbol> createFlatBufferMethodArgs;
     public String onCompleteCallback;
     public String preSerializeCallback;
+    public  Symbol.MethodSymbol createMethod;
 
     // Using a TreeMap now to keep the entries sorted. This ensures that code is
     // always written the exact same way, no matter which JDK you're using.

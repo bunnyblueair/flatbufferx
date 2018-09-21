@@ -164,6 +164,7 @@ public class FlatBufferSrcProcessor extends Processor {
         HashMap<String, Object> args = new HashMap<>();
         List<Symbol.VarSymbol> params = ((Symbol.MethodSymbol) enclosedElement).getParameters();
         objectHolder.createFlatBufferMethodArgs = params;
+        objectHolder.createMethod= (Symbol.MethodSymbol) enclosedElement;
         for (int i = 0; i < params.size(); i++) {
             if (i == 0) {
 
