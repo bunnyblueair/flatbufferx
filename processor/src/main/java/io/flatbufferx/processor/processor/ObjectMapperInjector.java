@@ -1,5 +1,6 @@
 package io.flatbufferx.processor.processor;
 
+import com.google.flatbuffers.FlatBufferBuilder;
 import com.google.flatbuffers.Table;
 import io.flatbufferx.core.FlatBuffersX;
 import io.flatbufferx.core.JsonMapper;
@@ -24,7 +25,9 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +52,9 @@ public class ObjectMapperInjector {
 
     public String getJavaClassFile() {
         try {
-            return JavaFile.builder(mJsonObjectHolder.packageName, getTypeSpec()).build().toString();
+            return JavaFile.builder(mJsonObjectHolder.packageName, getTypeSpec())
+                  //  .addStaticImport(FlatBufferBuilder.class)
+                    .build().toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -169,7 +174,7 @@ public class ObjectMapperInjector {
         addUsedJsonMapperVariables(builder);
         addUsedTypeConverterMethods(builder);
         builder.addMethod(getBean2FlatBuffers());
-
+      //  builder.addType(TypeSpec.classBuilder(ClassName.get(FlatBufferBuilder.class)).build())
         return builder.build();
     }
 
@@ -253,7 +258,7 @@ public class ObjectMapperInjector {
     private MethodSpec getBean2FlatBuffers() {
         MethodSpec.Builder builder = MethodSpec.methodBuilder("toFlatBuffer")
                 .addAnnotation(Override.class)
-                .returns(ClassName.get(Table.class))
+                .returns(ClassName.get(ByteBuffer.class))
                 .addModifiers(Modifier.PUBLIC)
 
                 .addParameter(ClassName.bestGuess(mJsonObjectHolder.injectedClassName), "object")
@@ -302,39 +307,45 @@ public class ObjectMapperInjector {
                 .endControlFlow();
     }
     private void insertBean2FlatBufferObjStatements(MethodSpec.Builder builder) {
-        if (!TextUtils.isEmpty(mJsonObjectHolder.preSerializeCallback)) {
-            builder.addStatement("object.$L()", mJsonObjectHolder.preSerializeCallback);
-        }
+        //todo fixme
+//        if (!TextUtils.isEmpty(mJsonObjectHolder.preSerializeCallback)) {
 
-        builder
-                .beginControlFlow("if (writeStartAndEnd)")
-                .addStatement("$L.writeStartObject()", JSON_GENERATOR_VARIABLE_NAME)
-                .endControlFlow();
-
-        List<String> processedFields = new ArrayList<>(mJsonObjectHolder.fieldMap.size());
-        for (Map.Entry<String, JsonFieldHolder> entry : mJsonObjectHolder.fieldMap.entrySet()) {
-            JsonFieldHolder fieldHolder = entry.getValue();
-
-            if (fieldHolder.shouldSerialize) {
-                String getter;
-                if (fieldHolder.hasGetter()) {
-                    getter = "object." + fieldHolder.getterMethod + "()";
-                } else {
-                    getter = "object." + entry.getKey();
-                }
-
-                fieldHolder.type.serialize(builder, 1, fieldHolder.fieldName[0], processedFields, getter, true, true, mJsonObjectHolder.serializeNullObjects, mJsonObjectHolder.serializeNullCollectionElements);
-            }
-        }
-
-        if (mJsonObjectHolder.hasParentClass()) {
-            builder.addStatement("$L.serialize(object, $L, false)", PARENT_OBJECT_MAPPER_VARIABLE_NAME, JSON_GENERATOR_VARIABLE_NAME);
-        }
-
-        builder
-                .beginControlFlow("if (writeStartAndEnd)")
-                .addStatement("$L.writeEndObject()", JSON_GENERATOR_VARIABLE_NAME)
-                .endControlFlow();
+//
+//            builder.addStatement("object.$L()", mJsonObjectHolder.preSerializeCallback);
+//        }
+        builder .addStatement("$T bufferBuilder = new $T()", ClassName.get(FlatBufferBuilder.class),ClassName.get(FlatBufferBuilder.class));
+      /// .final. builder.addStatement("com.google.flatbuffers.FlatBufferBuilder bufferBuilder=new FlatBufferBuilder()");
+//        builder
+//                .beginControlFlow("if (writeStartAndEnd)")
+//                .addStatement("$L.writeStartObject()", JSON_GENERATOR_VARIABLE_NAME)
+//                .endControlFlow();
+//
+//        List<String> processedFields = new ArrayList<>(mJsonObjectHolder.fieldMap.size());
+//        for (Map.Entry<String, JsonFieldHolder> entry : mJsonObjectHolder.fieldMap.entrySet()) {
+//            JsonFieldHolder fieldHolder = entry.getValue();
+//
+//            if (fieldHolder.shouldSerialize) {
+//                String getter
+//                if (fieldHolder.hasGetter()) {
+//                    getter = "object." + fieldHolder.getterMethod + "()";
+//                } else {
+//                    getter = "object." + entry.getKey();
+//                }
+//
+//                fieldHolder.type.serialize(builder, 1, fieldHolder.fieldName[0], processedFields, getter, true, true, mJsonObjectHolder.serializeNullObjects, mJsonObjectHolder.serializeNullCollectionElements);
+//            }
+//        }
+//
+//        if (mJsonObjectHolder.hasParentClass()) {
+//            builder.addStatement("$L.serialize(object, $L, false)", PARENT_OBJECT_MAPPER_VARIABLE_NAME, JSON_GENERATOR_VARIABLE_NAME);
+//        }
+//
+//        builder
+//                .beginControlFlow("if (writeStartAndEnd)")
+//                .addStatement("$L.writeEndObject()", JSON_GENERATOR_VARIABLE_NAME)
+//                .endControlFlow();
+        builder.addStatement("return bufferBuilder.dataBuffer()");
+      //  builder.endControlFlow();
     }
 
     private int addParseFieldLines(MethodSpec.Builder builder) {

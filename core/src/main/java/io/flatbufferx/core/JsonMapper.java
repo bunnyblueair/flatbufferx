@@ -9,14 +9,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.google.flatbuffers.FlatBufferBuilder;
 
 /** The class that handles all parsing and serialization of @JsonObject's */
 public abstract class JsonMapper<T> {
-    public  Table  toFlatBuffer(T object) throws IOException{
+    public ByteBuffer toFlatBuffer(T object) throws IOException{
         return null;
     };
     /**
