@@ -1,0 +1,79 @@
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+
+//import com.android.builder.Version
+//
+//
+//int androidBuildToolVersion() {
+//
+//    def versionNumber = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION);
+//    return versionNumber.getMajor()
+//}
+//
+//
+//if (androidBuildToolVersion() == 2) {
+//    apply plugin: 'com.neenbedankt.android-apt'
+//}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '27.0.3'
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
+    defaultConfig {
+        applicationId "io.flatbuffersx.demo"
+        minSdkVersion 14
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+  //  implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    // LoganSquare annotation processor
+   // if (androidBuildToolVersion() == 3) {
+        annotationProcessor project(":processor")
+//    } else {
+//        apt project(":processor")
+//    }
+    // LoganSquare runtime library
+    compile project(':core')
+    // Jackson libraries for comparison
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.6'
+    // GSON library for comparison
+    compile 'com.google.code.gson:gson:2.8.5'
+    // Moshi library for camparison
+    compile 'com.squareup.moshi:moshi:1.0.0'
+    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile group: 'com.google.flatbuffers', name: 'flatbuffers-java', version: '1.9.0'
+    compile group: 'com.google.flatbuffers', name: 'flatbuffers-java-grpc', version: '1.9.0'
+    compile 'com.android.support.constraint:constraint-layout:1.1.2'
+
+}

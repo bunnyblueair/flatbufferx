@@ -1,0 +1,30 @@
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        maven{
+            url 'http://maven.nuiton.org/release/'
+        }
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4'
+    }
+}
+
+allprojects {
+    apply plugin: 'idea'
+
+    group = 'io.flatbufferx'
+    version = '2.1.0'
+    repositories {
+        google()
+        jcenter()
+        mavenLocal()
+        maven{
+            url 'http://maven.nuiton.org/release/'
+        }
+    }
+}
+
+
+

@@ -1,0 +1,105 @@
+
+
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.jfrog.bintray'
+
+
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar, javadocJar
+    }
+
+    repositories {
+        jcenter()
+        mavenLocal()
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+                artifactId project.ext.artifactId
+
+                pom.withXml {
+                    def node = asNode()
+                    node.appendNode('name', 'FlatBuffersX')
+                    node.appendNode('description', 'Screaming fast JSON parsing and serialization library for Android.')
+                    node.appendNode('url', 'https://gitlab.com/FlatBuffersX/flatbufferx')
+
+                    def organizationNode = node.appendNode('organization')
+                    organizationNode.appendNode('name', 'BFlatBuffersX')
+                    organizationNode.appendNode('url', 'https://gitlab.com/FlatBuffersX')
+
+                    def scmNode = node.appendNode('scm')
+                    scmNode.appendNode('connection', 'scm:git:https://gitlab.com/FlatBuffersX/flatbufferx')
+                    scmNode.appendNode('developerConnection', 'scm:git:https://gitlab.com/FlatBuffersX/flatbufferx')
+                    scmNode.appendNode('url', 'https://gitlab.com/FlatBuffersX/flatbufferx')
+
+                    def developersNode = node.appendNode('developers')
+                    def ericNode = developersNode.appendNode('developer')
+                    ericNode.appendNode('id', 'bunnyblue')
+                    ericNode.appendNode('name', 'BunnyBlue')
+
+                    def licensesNode = node.appendNode('licenses')
+                    def licenseNode = licensesNode.appendNode('license')
+                    licenseNode.appendNode('name', 'Apache 2.0')
+                    licenseNode.appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
+
+                }
+            }
+        }
+    }
+
+    bintray {
+        Properties properties = new Properties()
+        File propFile = "${System.properties['user.home']}${File.separator}.gradle${File.separator}bintray.properties" as File
+       if (propFile.exists())
+       {
+           properties.load(propFile.newDataInputStream())
+           user = properties.getProperty("bintray.user")
+           key = properties.getProperty("bintray.apikey")
+       }
+        publications = ['mavenJava']
+
+        dryRun = false
+        publish = false
+
+        pkg {
+            repo = 'FlatBufferX'
+            userOrg = 'FlatBufferX'
+            name = project.ext.artifactId
+            desc = 'flat code.'
+            websiteUrl = 'https://gitlab.com/FlatBuffersX/flatbufferx'
+            issueTrackerUrl = 'https://gitlab.com/FlatBuffersX/flatbufferx/issues'
+            vcsUrl = 'https://gitlab.com/FlatBuffersX/flatbufferx'
+            licenses = ['Apache-2.0']
+            labels = ['json', 'android', 'parser', 'serializer', 'flatbuffers']
+            publicDownloadNumbers = true
+            version {
+                name = project.version
+                gpg {
+                    sign = true
+                    passphrase = project.hasProperty('bintray_gpg_passphrase') ? bintray_gpg_passphrase : ''
+                }
+                mavenCentralSync {
+                    sync = false
+                    user = project.hasProperty('maven_central_username') ? maven_central_username : ''
+                    password = project.hasProperty('maven_central_password') ? maven_central_password : ''
+                    close = '1'
+                }
+            }
+        }
+    }
+
