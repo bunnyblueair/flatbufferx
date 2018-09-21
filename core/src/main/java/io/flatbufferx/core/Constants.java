@@ -6,9 +6,9 @@ public class Constants {
     public static final String FLATBUFFER_INJECT_SUFFIX = "FB";
     public static final String MAPPER_CLASS_SUFFIX = "$$JsonObjectMapper";
     /** The generated JsonMapper loader class's package */
-    public static final String LOADER_PACKAGE_NAME = "io.logansquarex";
+    public static final String LOADER_PACKAGE_NAME = "io.flatbufferx";
 
     /** The generated JsonMapper loader class */
-    public static final String LOADER_CLASS_NAME = "JsonMapperLoaderImpl";
+    public static final String LOADER_CLASS_NAME = "FlatBuffersXLoader";
 
 }
