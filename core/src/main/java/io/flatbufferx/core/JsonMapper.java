@@ -18,7 +18,23 @@ import com.google.flatbuffers.FlatBufferBuilder;
 
 /** The class that handles all parsing and serialization of @JsonObject's */
 public abstract class JsonMapper<T> {
+    /**
+     * bean to flatbuffer
+     * @param object
+     * @return
+     * @throws IOException
+     */
     public ByteBuffer toFlatBuffer(T object) throws IOException{
+        return null;
+    }
+
+    /**
+     * flat to bean
+     * @param flatTable
+     * @return
+     * @throws IOException
+     */
+    public T flatBufferToBean(Table flatTable) throws IOException{
         return null;
     };
     /**
