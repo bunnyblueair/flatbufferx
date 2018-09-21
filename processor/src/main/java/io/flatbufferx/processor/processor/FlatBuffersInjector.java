@@ -33,11 +33,11 @@ import io.flatbufferx.core.objectmappers.ObjectMapper;
 import io.flatbufferx.core.objectmappers.StringMapper;
 import io.flatbufferx.core.util.SimpleArrayMap;
 
-public class JsonMapperLoaderInjector {
+public class FlatBuffersInjector {
 
     private final Collection<JsonObjectHolder> mJsonObjectHolders;
 
-    public JsonMapperLoaderInjector(Collection<JsonObjectHolder> jsonObjectHolders) {
+    public FlatBuffersInjector(Collection<JsonObjectHolder> jsonObjectHolders) {
         mJsonObjectHolders = jsonObjectHolders;
     }
 

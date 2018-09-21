@@ -6,8 +6,10 @@ import java.nio.*;
 import java.lang.*;
 import java.util.*;
 import com.google.flatbuffers.*;
+import io.flatbufferx.core.FlatBufferSrc;
 
 @SuppressWarnings("unused")
+@FlatBufferSrc
 public final class User extends Table {
   public static User getRootAsUser(ByteBuffer _bb) { return getRootAsUser(_bb, new User()); }
   public static User getRootAsUser(ByteBuffer _bb, User obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }

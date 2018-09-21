@@ -1,6 +1,6 @@
 package io.flatbufferx.processor;
 
-import io.flatbufferx.processor.processor.JsonMapperLoaderInjector;
+import io.flatbufferx.processor.processor.FlatBuffersInjector;
 import io.flatbufferx.processor.processor.JsonObjectHolder;
 import io.flatbufferx.processor.processor.ObjectMapperInjector;
 import io.flatbufferx.core.Constants;
@@ -69,7 +69,7 @@ public class FlatBufferAnnotationProcessor extends AbstractProcessor {
             if (!mLoaderWritten) {
                 mLoaderWritten = true;
 
-                final JsonMapperLoaderInjector loaderInjector = new JsonMapperLoaderInjector(mJsonObjectMap.values());
+                final FlatBuffersInjector loaderInjector = new FlatBuffersInjector(mJsonObjectMap.values());
                 try {
                     JavaFileObject jfo = mFiler.createSourceFile(Constants.LOADER_PACKAGE_NAME + "." + Constants.LOADER_CLASS_NAME);
                     Writer writer = jfo.openWriter();

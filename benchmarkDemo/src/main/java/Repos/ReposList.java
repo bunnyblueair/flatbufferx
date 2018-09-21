@@ -6,8 +6,10 @@ import java.nio.*;
 import java.lang.*;
 import java.util.*;
 import com.google.flatbuffers.*;
+import io.flatbufferx.core.FlatBufferSrc;
 
 @SuppressWarnings("unused")
+@FlatBufferSrc
 public final class ReposList extends Table {
   public static ReposList getRootAsReposList(ByteBuffer _bb) { return getRootAsReposList(_bb, new ReposList()); }
   public static ReposList getRootAsReposList(ByteBuffer _bb, ReposList obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
