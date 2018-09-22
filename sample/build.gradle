@@ -1,0 +1,37 @@
+//buildscript {
+//    repositories {
+//        jcenter()
+//        google()
+//    }
+//    dependencies {
+//      //  classpath 'com.android.tools.build:gradle:3.1.4'
+//        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+//    }
+//}
+plugins {
+    id 'java'
+    id 'idea'
+    id "net.ltgt.apt" version "0.18"
+}
+
+group 'io.flatbufferx'
+version '2.1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    apt project(":processor")
+//    } else {
+//        apt project(":processor")
+//    }
+    // LoganSquare runtime library
+    compile project(':core')
+    // Jackson libraries for comparison
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.6'
+}

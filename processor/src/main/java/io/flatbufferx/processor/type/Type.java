@@ -1,24 +1,20 @@
 package io.flatbufferx.processor.type;
 
-import com.sun.tools.javac.code.Symbol;
-import io.flatbufferx.processor.type.collection.ArrayCollectionType;
-import io.flatbufferx.processor.type.collection.CollectionType;
-import io.flatbufferx.processor.type.field.FieldType;
-import io.flatbufferx.processor.type.field.ParameterizedTypeField;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.sun.tools.javac.code.Symbol;
+import io.flatbufferx.processor.type.collection.ArrayCollectionType;
+import io.flatbufferx.processor.type.collection.ArrayListCollectionType;
+import io.flatbufferx.processor.type.collection.CollectionType;
+import io.flatbufferx.processor.type.field.FieldType;
+import io.flatbufferx.processor.type.field.ParameterizedTypeField;
 
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.*;
 
 public abstract class Type {
 
@@ -59,11 +55,20 @@ public abstract class Type {
 
         return type;
     }
-    public static Type typeForMethod( TypeMirror typeConverterType, Elements elements, Types types, Symbol.MethodSymbol enclosedElement) {
+
+    public static Type typeForMethod(TypeMirror typeConverterType, Elements elements, Types types, Symbol.MethodSymbol enclosedElement, boolean shouldBeList) {
       //  TypeMirror genericClassTypeMirror = types.erasure(typeMirror);
         boolean hasTypeConverter = typeConverterType != null && !typeConverterType.toString().equals("void");
 
         Type type;
+        if (shouldBeList) {
+
+
+            type = new ArrayListCollectionType(ClassName.bestGuess(enclosedElement.getReturnType().toString()));
+            type.addParameterType(FieldType.fieldTypeFor(enclosedElement.getReturnType().toString()));
+            //FieldType.fieldTypeFor( enclosedElement.getReturnType().toString()));
+            return type;
+        }
 //        if (!hasTypeConverter && typeMirror instanceof ArrayType) {
 //            TypeMirror arrayTypeMirror = ((ArrayType)typeMirror).getComponentType();
 //            type = new ArrayCollectionType(Type.typeFor(arrayTypeMirror, null, elements, types));

@@ -1,45 +1,37 @@
 package io.flatbufferx.processor;
 
+import com.google.flatbuffers.FlatBufferBuilder;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 import com.sun.tools.javac.code.Symbol;
 import io.flatbufferx.core.Constants;
 import io.flatbufferx.core.FlatBufferSrc;
-
+import io.flatbufferx.core.annotation.JsonIgnore;
 import io.flatbufferx.processor.processor.JsonFieldHolder;
 import io.flatbufferx.processor.processor.JsonObjectHolder;
 import io.flatbufferx.processor.processor.JsonObjectHolder.JsonObjectHolderBuilder;
 import io.flatbufferx.processor.processor.TextUtils;
 import io.flatbufferx.processor.processor.TypeUtils;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.TypeName;
-import io.flatbufferx.core.annotation.JsonIgnore;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import io.flatbufferx.processor.util.FieldConvertHelper;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 import static javax.lang.model.element.Modifier.ABSTRACT;
 import static javax.lang.model.element.Modifier.PRIVATE;
 
-public class JsonObjectProcessor extends Processor {
+public class FlatBufferSrcProcessor extends Processor {
 
-    public JsonObjectProcessor(ProcessingEnvironment processingEnv) {
+    public FlatBufferSrcProcessor(ProcessingEnvironment processingEnv) {
         super(processingEnv);
     }
 
@@ -168,10 +160,59 @@ public class JsonObjectProcessor extends Processor {
             }
         }
     }
+    private void processCreate(Element enclosedElement,JsonObjectHolder objectHolder){
+
+        HashMap<String, Object> args = new HashMap<>();
+        List<Symbol.VarSymbol> params = ((Symbol.MethodSymbol) enclosedElement).getParameters();
+        objectHolder.createFlatBufferMethodArgs = params;
+        objectHolder.createMethod= (Symbol.MethodSymbol) enclosedElement;
+        for (int i = 0; i < params.size(); i++) {
+            if (i == 0) {
+
+            }
+            Symbol.VarSymbol varSymbol = params.get(i);
+            if (varSymbol.type.isPrimitive()) {
+
+            } else {
+
+            }
+//          /
+            //  var((Symbol.MethodSymbol) enclosedElement).getParameters().get(1).type.isPrimitive()Symbol.getty
+        }
+
+    }
     private void filterAllFlatBuffer(Element element, Elements elements, Types types, JsonObjectHolder objectHolder) {
         List<? extends Element> enclosedElements = element.getEnclosedElements();
+      ClassName builderClazz=  ClassName.get(FlatBufferBuilder.class);
+        ClassName xClass=  ClassName.bestGuess(objectHolder.injectedClassName);
         String targetMethod="create"+element.getSimpleName();
+        HashSet<String> arrayList = new HashSet<>();
         for (Element enclosedElement : enclosedElements) {
+
+            if (enclosedElement instanceof Symbol.MethodSymbol) {
+                Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) enclosedElement;
+                if (methodSymbol.getModifiers().contains(Modifier.STATIC)) {
+                    // if (methodSymbol.getReturnType().toString().equals(ByteBuffer.class.getName())) {
+                    if (methodSymbol.getSimpleName().toString().startsWith("create") && methodSymbol.getSimpleName().toString().endsWith("Vector")) {
+                        arrayList.add(methodSymbol.getSimpleName().toString());//
+                    }
+                    //  continue;
+                    // }
+
+                }
+            }
+        }
+
+
+        //createReposVector
+        for (Element enclosedElement : enclosedElements) {
+            if (enclosedElement.getSimpleName().toString().equals(targetMethod)){
+                System.err.println("find create");
+                processCreate(enclosedElement, objectHolder);
+
+                //
+                continue;
+            }
             if ("__init".contentEquals(enclosedElement.getSimpleName())||"__assign".contentEquals(enclosedElement.getSimpleName())){
                 continue;
             }
@@ -186,7 +227,12 @@ public class JsonObjectProcessor extends Processor {
                       continue;
                   }
                   System.err.println(methodSymbol.getSimpleName());
-                  createOrUpdateFieldHolder2( elements, types, objectHolder,methodSymbol);
+                  String targetVector = FieldConvertHelper.lineToHump(String.format("create_%s_vector", methodSymbol.getSimpleName()));
+                  boolean methodShouldList = false;
+                  if (arrayList.contains(targetVector)) {
+                      methodShouldList = true;
+                  }
+                  createOrUpdateFieldHolder2(elements, types, objectHolder, methodSymbol, methodShouldList);
               }
           }
 //            if (enclosedElement.getSimpleName().equals(targetMethod)){
@@ -229,7 +275,8 @@ public class JsonObjectProcessor extends Processor {
             }
         }
     }
-    private void createOrUpdateFieldHolder2( Elements elements, Types types, JsonObjectHolder objectHolder, Symbol.MethodSymbol enclosedElement) {
+
+    private void createOrUpdateFieldHolder2(Elements elements, Types types, JsonObjectHolder objectHolder, Symbol.MethodSymbol enclosedElement, boolean methodShouldList) {
       //  JsonIgnore ignoreAnnotation = element.getAnnotation(JsonIgnore.class);
 
 
@@ -239,7 +286,9 @@ public class JsonObjectProcessor extends Processor {
                 objectHolder.fieldMap.put(enclosedElement.getSimpleName().toString(), fieldHolder);
             }
 
-            String error = fieldHolder.fillWithMethod( elements, types, enclosedElement,null, objectHolder, true, true);
+        String error = fieldHolder.fillWithMethod(elements, types, enclosedElement, null, objectHolder, true, true,
+                true,
+                methodShouldList);
             if (!TextUtils.isEmpty(error)) {
                 error(enclosedElement, error);
             }

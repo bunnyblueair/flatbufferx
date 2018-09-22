@@ -1,14 +1,10 @@
 package io.flatbufferx.processor.processor;
 
-import com.squareup.javapoet.TypeName;
 import com.sun.tools.javac.code.Symbol;
 import io.flatbufferx.processor.type.Type;
 import io.flatbufferx.processor.type.collection.CollectionType;
 import io.flatbufferx.processor.type.field.FieldType;
 import io.flatbufferx.processor.type.field.ParameterizedTypeField;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -18,6 +14,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JsonFieldHolder {
 
@@ -28,6 +26,7 @@ public class JsonFieldHolder {
     public boolean shouldSerialize;
     public Type type;
     public Type receiverType;
+    public boolean methodShouldbeList = false;
 
     public String fill(Element element, Elements elements, Types types, String[] fieldNames, TypeMirror typeConverterType, JsonObjectHolder objectHolder, boolean shouldParse, boolean shouldSerialize) {
         if (fieldNames == null || fieldNames.length == 0) {
@@ -39,7 +38,7 @@ public class JsonFieldHolder {
                     break;
             }
 
-            fieldNames = new String[] { defaultFieldName };
+            fieldNames = new String[]{defaultFieldName};
         }
         fieldName = fieldNames;
 
@@ -52,18 +51,26 @@ public class JsonFieldHolder {
         type = Type.typeFor(element.asType(), typeConverterType, elements, types);
         return ensureValidType(type, element);
     }
-    public String fillWithMethod( Elements elements, Types types, Symbol.MethodSymbol enclosedElement, TypeMirror typeConverterType, JsonObjectHolder objectHolder, boolean shouldParse, boolean shouldSerialize) {
 
-        receiverType= FieldType.fieldTypeFor(enclosedElement.owner.getQualifiedName().toString());
-        fieldName =  new String[] { enclosedElement.getSimpleName().toString() };
-       // objectHolder.fieldMap
+    public String fillWithMethod(Elements elements, Types types, Symbol.MethodSymbol enclosedElement, TypeMirror typeConverterType, JsonObjectHolder objectHolder,
+                                 boolean parse, boolean shouldParse, boolean shouldSerialize, boolean methodShouldbeList) {
+
+        receiverType = FieldType.fieldTypeFor(enclosedElement.owner.getQualifiedName().toString());
+        fieldName = new String[]{enclosedElement.getSimpleName().toString()};
+        // objectHolder.fieldMap
         this.shouldParse = shouldParse;
         this.shouldSerialize = shouldSerialize;
 
-       // setterMethod = getSetter(element, elements);
-      //  getterMethod = getGetter(element, elements);
-     //   type=new Ty
-        type = Type.typeForMethod(typeConverterType, elements, types,enclosedElement);
+        // setterMethod = getSetter(element, elements);
+        //  getterMethod = getGetter(element, elements);
+        //   type=new Ty
+        this.methodShouldbeList = methodShouldbeList;
+        if (methodShouldbeList) {
+            type = Type.typeForMethod(typeConverterType, elements, types, enclosedElement, true);
+
+        } else {
+            type = Type.typeForMethod(typeConverterType, elements, types, enclosedElement, false);
+        }
         return null;//ensureValidType(type, TypeName.get(enclosedElement.getReturnType()));
     }
 

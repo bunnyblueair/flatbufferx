@@ -1,1 +1,6 @@
-include ':core',':processor',':benchmarkDemo'
+include ':core',':processor'
+//,':benchmarkDemo'
+include 'sample'
+if ("true"==System.getenv("enable_android")){
+    include 'benchmarkDemo'
+}

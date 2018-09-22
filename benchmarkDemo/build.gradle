@@ -11,7 +11,6 @@ buildscript {
 
 apply plugin: 'com.android.application'
 
-
 //import com.android.builder.Version
 //
 //
@@ -54,11 +53,11 @@ android {
 }
 
 dependencies {
-  //  implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    //  implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // LoganSquare annotation processor
-   // if (androidBuildToolVersion() == 3) {
-        annotationProcessor project(":processor")
+    // if (androidBuildToolVersion() == 3) {
+    annotationProcessor project(":processor")
 //    } else {
 //        apt project(":processor")
 //    }

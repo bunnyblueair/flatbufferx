@@ -3,19 +3,40 @@ package io.flatbufferx.core;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.google.flatbuffers.Table;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.google.flatbuffers.FlatBufferBuilder;
 
 /** The class that handles all parsing and serialization of @JsonObject's */
 public abstract class JsonMapper<T> {
+    /**
+     * bean to flatbuffer
+     * @param object
+     * @return
+     * @throws IOException
+     */
+    public ByteBuffer toFlatBuffer(T object) throws IOException{
+        return null;
+    }
 
+    /**
+     * flat to bean
+     * @param flatTable
+     * @return
+     * @throws IOException
+     */
+    public T flatBufferToBean(Table flatTable) throws IOException{
+        return null;
+    };
     /**
      * Parse an object from a pre-configured JsonParser object.
      *
