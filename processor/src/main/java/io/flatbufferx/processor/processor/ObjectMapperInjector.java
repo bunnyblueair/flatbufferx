@@ -319,6 +319,7 @@ public class ObjectMapperInjector {
             // agrVarSymbol.getSimpleName().toString()
             String name = FieldConvertHelper.lineToHump(agrVarSymbol.getSimpleName().toString());
             if (mJsonObjectHolder.fieldMap.containsKey(name)) {
+                JsonFieldHolder jsonFieldHolder = mJsonObjectHolder.fieldMap.get(name);
                 // builder.addStatement("object.$L",name);
                 System.err.println("==" + name);
                 stringBuffer.append("$L,");
@@ -327,6 +328,15 @@ public class ObjectMapperInjector {
                 String nameFix= name.substring(0, name.lastIndexOf("offset"));
                 System.err.println("==" +nameFix);
                 stringBuffer.append("$L,");
+                //if (nameFix)
+                JsonFieldHolder jsonFieldHolder = mJsonObjectHolder.fieldMap.get(nameFix);
+                if (jsonFieldHolder != null) {
+                    if (jsonFieldHolder.methodShouldbeList) {
+                        args[i] = i;//todo fixme
+                        //  args[i] = CodeBlock.of("bufferBuilder.createString(object.$L)",nameFix);
+                        continue;
+                    }
+                }
                 args[i] = CodeBlock.of("bufferBuilder.createString(object.$L)",nameFix);
                 if (nameFix.equalsIgnoreCase("owner")){
                     //todo fixme
@@ -453,13 +463,19 @@ public class ObjectMapperInjector {
     }
 
     private void setFieldHolderJsonMapperVariableName(Type type) {
+        boolean status = false;
         if (type instanceof ParameterizedTypeField) {
             ParameterizedTypeField parameterizedType = (ParameterizedTypeField) type;
             parameterizedType.setJsonMapperVariableName(getJsonMapperVariableNameForTypeParameter(parameterizedType.getParameterName()));
+            status = true;
         }
 
         for (Type subType : type.parameterTypes) {
             setFieldHolderJsonMapperVariableName(subType);
+            status = true;
+        }
+        if (!status) {
+            System.out.println("setFieldHolderJsonMapperVariableName error===");
         }
     }
 
