@@ -343,8 +343,8 @@ public class ObjectMapperInjector {
                         builder.addStatement("int[] __$N = new int[$N.size()]",nameFix,nameFix);
                         builder.beginControlFlow("for (int i = 0; i < $N.size(); i++) ",nameFix);
 
-                        builder.addStatement(" $T arrayObj = ($T)$N.get(i)", jsonFieldHolder.receiverType.getTypeName(),
-                                jsonFieldHolder.receiverType.getTypeName(), nameFix);
+                        builder.addStatement(" $T arrayObj = ($T)$N.get(i)", jsonFieldHolder.returnsType.getTypeName(),
+                                jsonFieldHolder.returnsType.getTypeName(), nameFix);
                         builder.addStatement("__$N[i]=arrayObj.toFlatBufferOffset(bufferBuilder)",nameFix);
                         builder.endControlFlow();
                         builder.addStatement(" int offset= $T.$N(bufferBuilder, __$N)", mJsonObjectHolder.objectTypeName,
