@@ -29,6 +29,15 @@ public abstract class JsonMapper<T> {
     }
 
     /**
+     * process object to offset
+     * @param bufferBuilder
+     * @return
+     * @throws IOException
+     */
+    public int toFlatBufferOffset(FlatBufferBuilder bufferBuilder) throws IOException{
+        return -1;
+    }
+    /**
      * flat to bean
      * @param flatTable
      * @return
