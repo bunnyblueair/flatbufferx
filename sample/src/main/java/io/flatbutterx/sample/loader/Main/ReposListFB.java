@@ -18,6 +18,14 @@ import java.util.List;
 public final class ReposListFB extends JsonMapper<ReposListFB> {
     private static TypeConverter<RepoFB> io_flatbutterx_sample_Repo_type_converter;
 
+    @Override
+    public String toString() {
+        return "ReposListFB{" +
+                "repos=" + repos +
+                ", reposLength=" + reposLength +
+                '}';
+    }
+
     public ArrayList<RepoFB> repos;
 
     public Integer reposLength;
@@ -100,20 +108,20 @@ public final class ReposListFB extends JsonMapper<ReposListFB> {
         //   .final.   ReposList.createReposList(bufferBuilder, 1);
         int offset = toFlatBufferOffset(bufferBuilder);
         bufferBuilder.finish(offset);
-        return ByteBuffer.wrap(bufferBuilder.sizedByteArray());
+        return bufferBuilder.dataBuffer();
     }
 
     @Override
     public int toFlatBufferOffset(FlatBufferBuilder bufferBuilder) throws IOException {
         int[] data = new int[repos.size()];
-        ReposList.startReposList(bufferBuilder);
         for (int i = 0; i < repos.size(); i++) {
             RepoFB repoFB = repos.get(i);
             data[i] = repoFB.toFlatBufferOffset(bufferBuilder);
-            ReposList.addRepos(bufferBuilder, data[i]);
+         //   ReposList.addRepos(bufferBuilder, bufferBuilder.createByteVector());
         }
-    //    ReposList.createReposList(, )
-     return   ReposList.endReposList(bufferBuilder);
+       int offset= ReposList.createReposVector(bufferBuilder, data);
+       return  ReposList.createReposList(bufferBuilder,offset );
+
       //  return ReposList.createReposVector(bufferBuilder, data);
         //return super.toFlatBufferOffset(bufferBuilder);
     }

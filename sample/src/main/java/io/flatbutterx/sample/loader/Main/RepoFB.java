@@ -116,12 +116,23 @@ public final class RepoFB extends JsonMapper<RepoFB> {
 
   @Override
   public int toFlatBufferOffset(FlatBufferBuilder bufferBuilder) throws IOException {
-    bufferBuilder.Nested(bufferBuilder.offset());
-    User.startUser(bufferBuilder);
+
    int user= this.owner.toFlatBufferOffset(bufferBuilder);
 return     Repo.createRepo(bufferBuilder,this.id,bufferBuilder.createString(this.name),bufferBuilder.createString(this.fullName),
         user,bufferBuilder.createString(this.htmlUrl),bufferBuilder.createString(this.description));
   //  return super.toFlatBufferOffset(bufferBuilder);
+  }
+
+  @Override
+  public String toString() {
+    return "RepoFB{" +
+            "description='" + description + '\'' +
+            ", fullName='" + fullName + '\'' +
+            ", htmlUrl='" + htmlUrl + '\'' +
+            ", id=" + id +
+            ", name='" + name + '\'' +
+            ", owner=" + owner +
+            '}';
   }
 
   @Override

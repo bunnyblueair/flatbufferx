@@ -87,6 +87,7 @@ public class FTest {
         ReposListFB reposListFB = new ReposListFB();
         reposListFB.repos = new ArrayList();
         reposListFB.repos.add(repo);
+        reposListFB.repos.add(repo);
         ByteBuffer byteBuffered = null;
         try {
             byteBuffered = reposListFB.toFlatBuffer(reposListFB);
@@ -95,7 +96,7 @@ public class FTest {
             e.printStackTrace();
         }
         System.out.println("=========");
-        byteBuffered.flip();
+        // byteBuffered.flip();
         ReposList reposList = ReposList.getRootAsReposList(byteBuffered);
         ReposListFB reposListFB1 = new ReposListFB();
         try {
