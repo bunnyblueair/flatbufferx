@@ -26,6 +26,7 @@ public class JsonFieldHolder {
     public boolean shouldSerialize;
     public Type type;
     public Type receiverType;
+    public Type returnsType;
     public boolean methodShouldbeList = false;
 
     public String fill(Element element, Elements elements, Types types, String[] fieldNames, TypeMirror typeConverterType, JsonObjectHolder objectHolder, boolean shouldParse, boolean shouldSerialize) {
@@ -56,6 +57,10 @@ public class JsonFieldHolder {
                                  boolean parse, boolean shouldParse, boolean shouldSerialize, boolean methodShouldbeList) {
 
         receiverType = FieldType.fieldTypeFor(enclosedElement.owner.getQualifiedName().toString());
+        if (!enclosedElement.getReturnType().isPrimitive())
+        {  returnsType =FieldType.fieldTypeFor(enclosedElement.getReturnType().toString());
+
+        }
         fieldName = new String[]{enclosedElement.getSimpleName().toString()};
         // objectHolder.fieldMap
         this.shouldParse = shouldParse;
