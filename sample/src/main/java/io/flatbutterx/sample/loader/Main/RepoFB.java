@@ -116,8 +116,28 @@ public final class RepoFB extends JsonMapper<RepoFB> {
 
   @Override
   public int toFlatBufferOffset(FlatBufferBuilder bufferBuilder) throws IOException {
-    Repo.createRepo(bufferBuilder,this.id,bufferBuilder.createString(this.name),bufferBuilder.createString(this.fullName),
-            this.owner.toFlatBufferOffset(bufferBuilder),bufferBuilder.createString(this.htmlUrl),bufferBuilder.createString(this.description));
-    return super.toFlatBufferOffset(bufferBuilder);
+    bufferBuilder.Nested(bufferBuilder.offset());
+    User.startUser(bufferBuilder);
+   int user= this.owner.toFlatBufferOffset(bufferBuilder);
+return     Repo.createRepo(bufferBuilder,this.id,bufferBuilder.createString(this.name),bufferBuilder.createString(this.fullName),
+        user,bufferBuilder.createString(this.htmlUrl),bufferBuilder.createString(this.description));
+  //  return super.toFlatBufferOffset(bufferBuilder);
+  }
+
+  @Override
+  public RepoFB flatBufferToBean(Object object) throws IOException {
+    Repo repo= (Repo) object;
+    this.fullName=repo.fullName();
+    this.htmlUrl=repo.htmlUrl();
+    this.description=repo.description();
+    this.id=repo.id();
+    this.name=repo.name();
+    UserFB owner=new UserFB();
+    owner.flatBufferToBean(repo.owner());
+    this.owner=owner;
+    return  this;
+
+   // this.owner=repo.owner()
+    //return super.flatBufferToBean(object);
   }
 }

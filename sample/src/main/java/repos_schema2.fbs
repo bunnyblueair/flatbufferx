@@ -1,0 +1,14 @@
+namespace io.flatbutterx.sample;
+
+table ReposList2 {
+    repos : [Repo2];
+}
+
+table Repo2 {
+    id : long;
+    name : string;
+
+}
+
+
+root_type ReposList2;

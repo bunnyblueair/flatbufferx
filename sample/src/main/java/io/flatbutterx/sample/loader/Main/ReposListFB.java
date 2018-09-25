@@ -100,18 +100,33 @@ public final class ReposListFB extends JsonMapper<ReposListFB> {
         //   .final.   ReposList.createReposList(bufferBuilder, 1);
         int offset = toFlatBufferOffset(bufferBuilder);
         bufferBuilder.finish(offset);
-        return bufferBuilder.dataBuffer();
+        return ByteBuffer.wrap(bufferBuilder.sizedByteArray());
     }
 
     @Override
     public int toFlatBufferOffset(FlatBufferBuilder bufferBuilder) throws IOException {
         int[] data = new int[repos.size()];
+        ReposList.startReposList(bufferBuilder);
         for (int i = 0; i < repos.size(); i++) {
             RepoFB repoFB = repos.get(i);
             data[i] = repoFB.toFlatBufferOffset(bufferBuilder);
+            ReposList.addRepos(bufferBuilder, data[i]);
         }
-
-        return ReposList.createReposVector(bufferBuilder, data);
+    //    ReposList.createReposList(, )
+     return   ReposList.endReposList(bufferBuilder);
+      //  return ReposList.createReposVector(bufferBuilder, data);
         //return super.toFlatBufferOffset(bufferBuilder);
+    }
+
+    @Override
+    public ReposListFB flatBufferToBean(Object object) throws IOException {
+        ReposList reposList= (ReposList) object;
+        repos=new ArrayList<>();
+        for (int i = 0; i < reposList.reposLength(); i++) {
+            RepoFB repoFB=new RepoFB();
+            repoFB.flatBufferToBean(reposList.repos(i));
+            repos.add(i, repoFB);
+        }
+        return super.flatBufferToBean(object);
     }
 }
