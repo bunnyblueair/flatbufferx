@@ -3,9 +3,15 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FlatBufferX.iml" filepath="$PROJECT_DIR$/FlatBufferX.iml" />
-      <module fileurl="file://$PROJECT_DIR$/benchmarkDemo/benchmarkDemo.iml" filepath="$PROJECT_DIR$/benchmarkDemo/benchmarkDemo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/processor/processor.iml" filepath="$PROJECT_DIR$/processor/processor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" group="core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/core_main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/core_main.iml" group="core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/core_test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/core_test.iml" group="core" />
+      <module fileurl="file://$PROJECT_DIR$/processor/processor.iml" filepath="$PROJECT_DIR$/processor/processor.iml" group="processor" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/processor/processor_main.iml" filepath="$PROJECT_DIR$/.idea/modules/processor/processor_main.iml" group="processor" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/processor/processor_test.iml" filepath="$PROJECT_DIR$/.idea/modules/processor/processor_test.iml" group="processor" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/sample.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/sample.iml" group="sample" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/sample_main.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/sample_main.iml" group="sample" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/sample_test.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/sample_test.iml" group="sample" />
     </modules>
   </component>
 </project>

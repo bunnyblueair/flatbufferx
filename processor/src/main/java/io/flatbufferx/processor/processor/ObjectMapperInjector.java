@@ -474,66 +474,11 @@ public class ObjectMapperInjector {
     }
 
     private void insertBean2FlatBufferObjStatements(MethodSpec.Builder builder) {
-        //todo fixme
-//        if (!TextUtils.isEmpty(mJsonObjectHolder.preSerializeCallback)) {
-
-//
-//            builder.addStatement("object.$L()", mJsonObjectHolder.preSerializeCallback);
-//        }
 
         builder.addStatement("$T bufferBuilder = new $T()", ClassName.get(FlatBufferBuilder.class), ClassName.get(FlatBufferBuilder.class));
-        Symbol.VarSymbol buildSynbol = mJsonObjectHolder.createFlatBufferMethodArgs.get(0);
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("$T.$L(");
-        Object[] args = new Object[mJsonObjectHolder.createFlatBufferMethodArgs.size()];
-        args[0] = "bufferBuilder";
-        for (int i = 0; i < mJsonObjectHolder.createFlatBufferMethodArgs.size(); i++) {
 
-            Symbol.VarSymbol agrVarSymbol = mJsonObjectHolder.createFlatBufferMethodArgs.get(i);
-            if (i == 0) {
-                stringBuffer.append("$N,");
-                //    args[i+1] = i;
-                continue;
-            }
-            // agrVarSymbol.getSimpleName().toString()
-            String name = FieldConvertHelper.lineToHump(agrVarSymbol.getSimpleName().toString());
-            if (mJsonObjectHolder.fieldMap.containsKey(name)) {
-                JsonFieldHolder jsonFieldHolder = mJsonObjectHolder.fieldMap.get(name);
-                // builder.addStatement("object.$L",name);
-                System.err.println("==" + name);
-                stringBuffer.append("$L,");
-                args[i] = CodeBlock.of("this.$L", name);
-            } else {
-                String nameFix = name.substring(0, name.lastIndexOf("offset"));
-                System.err.println("==" + nameFix);
-                stringBuffer.append("$L,");
-                //if (nameFix)
-                JsonFieldHolder jsonFieldHolder = mJsonObjectHolder.fieldMap.get(nameFix);
-                if (jsonFieldHolder != null) {
-                    if (jsonFieldHolder.methodShouldbeList) {
-                        args[i] = i;//todo fixme
-                        //  args[i] = CodeBlock.of("bufferBuilder.createString(object.$L)",nameFix);
-                        continue;
-                    }
-                }
-                args[i] = CodeBlock.of("bufferBuilder.createString(object.$L)", nameFix);
-                if (nameFix.equalsIgnoreCase("owner")) {
-                    //todo fixme
-                    args[i] = i;
-                }
-                //  args[i] = i;
-            }
-
-
-        }
-        stringBuffer.deleteCharAt(stringBuffer.length() - 1);
-        stringBuffer.append(")");
-        Object[] args2 = new Object[args.length + 2];
-        System.arraycopy(args, 0, args2, 2, args.length);
-        args2[0] = mJsonObjectHolder.objectTypeName;
-        args2[1] = mJsonObjectHolder.createMethod.getSimpleName().toString();
-        System.err.println(stringBuffer.toString());
-        builder.addStatement(stringBuffer.toString(), args2);
+        builder.addStatement("int offset = toFlatBufferOffset(bufferBuilder)");
+        builder.addStatement("bufferBuilder.finish(offset)");
 
         builder.addStatement("return bufferBuilder.dataBuffer()");
         //  builder.endControlFlow();
