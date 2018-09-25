@@ -1,10 +1,14 @@
 package io.flatbufferx.processor.type.collection;
 
+import com.squareup.javapoet.ClassName;
+import io.flatbufferx.core.Constants;
 import io.flatbufferx.processor.processor.TextUtils;
 import io.flatbufferx.processor.type.Type;
 import com.fasterxml.jackson.core.JsonToken;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.MethodSpec.Builder;
+import io.flatbufferx.processor.type.field.DynamicFieldType;
+import io.flatbufferx.processor.type.field.FieldType;
 
 import java.util.List;
 
@@ -18,6 +22,11 @@ public abstract class SingleParameterCollectionType extends CollectionType {
     @Override
     public void parse(Builder builder, int depth, String setter, Object... setterFormatArgs) {
         Type parameterType = parameterTypes.get(0);
+        Type parameterTypeRaw = parameterType;
+//        if (parameterType instanceof DynamicFieldType){
+//            parameterType= FieldType.fieldTypeFor(parameterType.getTypeName().toString());
+//       // ClassName.bestGuess(parameterType.getTypeName().toString()+ Constants.FLATBUFFER_INJECT_SUFFIX);
+//        }
 
         final String collectionVarName = "collection" + depth;
         final String valueVarName = "value" + depth;
@@ -46,6 +55,10 @@ public abstract class SingleParameterCollectionType extends CollectionType {
     @Override
     public void serialize(MethodSpec.Builder builder, int depth, String fieldName, List<String> processedFieldNames, String getter, boolean isObjectProperty, boolean checkIfNull, boolean writeIfNull, boolean writeCollectionElementIfNull) {
         Type parameterType = parameterTypes.get(0);
+//        if (parameterType instanceof DynamicFieldType){
+//            parameterType= FieldType.fieldTypeFor(parameterType.getTypeName().toString());
+//            // ClassName.bestGuess(parameterType.getTypeName().toString()+ Constants.FLATBUFFER_INJECT_SUFFIX);
+//        }
         final String cleanFieldName = TextUtils.toUniqueFieldNameVariable(fieldName, processedFieldNames);
         final String collectionVariableName = "lslocal" + cleanFieldName;
         final String elementVarName = "element" + depth;

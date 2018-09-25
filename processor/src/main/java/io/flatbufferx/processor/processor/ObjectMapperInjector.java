@@ -14,10 +14,7 @@ import io.flatbufferx.core.typeconverters.TypeConverter;
 import io.flatbufferx.core.util.SimpleArrayMap;
 import io.flatbufferx.processor.type.Type;
 import io.flatbufferx.processor.type.Type.ClassNameObjectMapper;
-import io.flatbufferx.processor.type.field.DynamicFieldType;
-import io.flatbufferx.processor.type.field.FieldType;
-import io.flatbufferx.processor.type.field.ParameterizedTypeField;
-import io.flatbufferx.processor.type.field.TypeConverterFieldType;
+import io.flatbufferx.processor.type.field.*;
 import io.flatbufferx.processor.util.FieldConvertHelper;
 
 import javax.lang.model.element.Modifier;
@@ -333,7 +330,6 @@ public class ObjectMapperInjector {
             if (mJsonObjectHolder.fieldMap.containsKey(name)) {
                 JsonFieldHolder jsonFieldHolder = mJsonObjectHolder.fieldMap.get(name);
                 // builder.addStatement("object.$L",name);
-                System.err.println("==" + name);
                 stringBuffer.append("$L,");
                 args[i] = CodeBlock.of("this.$L", name);
             } else {
@@ -347,32 +343,34 @@ public class ObjectMapperInjector {
                         builder.addStatement("int[] __$N = new int[$N.size()]",nameFix,nameFix);
                         builder.beginControlFlow("for (int i = 0; i < $N.size(); i++) ",nameFix);
 
-                                FieldType fieldType = FieldType.fieldTypeFor(jsonFieldHolder.receiverType.getTypeName().toString() + Constants.FLATBUFFER_INJECT_SUFFIX);
-                        builder.addStatement(" $T arrayObj = ($T)$N.get(i)", fieldType.getTypeName(),
-                                fieldType.getTypeName(), nameFix);
+                        builder.addStatement(" $T arrayObj = ($T)$N.get(i)", jsonFieldHolder.receiverType.getTypeName(),
+                                jsonFieldHolder.receiverType.getTypeName(), nameFix);
                         builder.addStatement("__$N[i]=arrayObj.toFlatBufferOffset(bufferBuilder)",nameFix);
                         builder.endControlFlow();
-//                        int[] data = new int[repos.size()];
-//                        for (int i = 0; i < repos.size(); i++) {
-//                            RepoFB repoFB = repos.get(i);
-//                            data[i] = repoFB.toFlatBufferOffset(bufferBuilder);
-//                            //   ReposList.addRepos(bufferBuilder, bufferBuilder.createByteVector());
-//                        }
-//                        int offset= ReposList.createReposVector(bufferBuilder, data);
-                        args[i] = i;//todo fixme
-                        //  args[i] = CodeBlock.of("bufferBuilder.createString(object.$L)",nameFix);
+                        builder.addStatement(" int offset= $T.$N(bufferBuilder, __$N)", mJsonObjectHolder.objectTypeName,
+                                FieldConvertHelper.lineToHump(String.format("create_%s_vector", nameFix)), nameFix);
+                        args[i] = CodeBlock.of("offset");
                         continue;
                     }
                 }
                 if (jsonFieldHolder.receiverType instanceof DynamicFieldType){
 
                 }
-                args[i] = CodeBlock.of("bufferBuilder.createString(this.$L)", nameFix);
-                if (nameFix.equalsIgnoreCase("owner")) {
-                    //todo fixme
-                    args[i] = i;
+                if (jsonFieldHolder.type instanceof StringFieldType) {
+                    args[i] = CodeBlock.of("bufferBuilder.createString(this.$L)", nameFix);
+                    continue;
                 }
-                //  args[i] = i;
+                if (jsonFieldHolder.type instanceof DynamicFieldType) {
+                    //this.owner.toFlatBufferOffset(bufferBuilder)
+
+                    args[i] = CodeBlock.of("$N.toFlatBufferOffset(bufferBuilder)", nameFix);
+                    continue;
+                }
+
+//                if (nameFix.equalsIgnoreCase("owner")) {
+//                    //todo fixme
+//                    args[i] = i;
+//                }
             }
 
 
@@ -383,7 +381,7 @@ public class ObjectMapperInjector {
         System.arraycopy(args, 0, args2, 2, args.length);
         args2[0] = mJsonObjectHolder.objectTypeName;
         args2[1] = mJsonObjectHolder.createMethod.getSimpleName().toString();
-        System.err.println(stringBuffer.toString());
+
         builder.addStatement(stringBuffer.toString(), args2);
 
     //    builder.addStatement("return bufferBuilder.dataBuffer()");
@@ -450,14 +448,22 @@ public class ObjectMapperInjector {
 //                RepoFB repoFB=new RepoFB();
 //                repoFB.flatBufferToBean(reposList.repos(i));
 //                repos.add(i, repoFB);
-                FieldType fieldType = FieldType.fieldTypeFor(fieldHolder.receiverType.getTypeName().toString() + Constants.FLATBUFFER_INJECT_SUFFIX);
-                builder.addStatement("$T obj=new $T()", fieldType.getTypeName(), fieldType.getTypeName());
+                //    FieldType fieldType = FieldType.fieldTypeFor(fieldHolder.receiverType.getTypeName().toString() );
+                builder.addStatement("$T obj=new $T()", fieldHolder.receiverType.getTypeName(), fieldHolder.receiverType.getTypeName());
                 builder.addStatement("obj.flatBufferToBean(flatObj.$N(i))",methodName);
                 builder.addStatement("$N.add(obj)",methodName);
                 builder.endControlFlow();
 
 //                }
             } else {
+                if (fieldHolder.type instanceof DynamicFieldType) {
+                    String fixedClazz = fieldHolder.type.getTypeName().toString();//+Constants.FLATBUFFER_INJECT_SUFFIX;
+                    builder.addStatement("this.$N = new $T().flatBufferToBean(flatObj.$N())", methodName, ClassName.bestGuess(fixedClazz), methodName);
+                    continue;
+                }
+//                UserFB owner = new UserFB();
+//                owner.flatBufferToBean(repo.owner());
+//                this.owner = owner;
                 builder.addStatement("this.$N = flatObj.$N()", methodName, methodName);
             }
         }
@@ -648,7 +654,7 @@ public class ObjectMapperInjector {
             status = true;
         }
         if (!status) {
-            System.out.println("setFieldHolderJsonMapperVariableName error===");
+            //   System.out.println("setFieldHolderJsonMapperVariableName error===");
         }
     }
 
@@ -669,10 +675,18 @@ public class ObjectMapperInjector {
         int entryCount = 0;
         for (Map.Entry<String, JsonFieldHolder> entry : mJsonObjectHolder.fieldMap.entrySet()) {
             JsonFieldHolder fieldHolder = entry.getValue();
-            builder2.addField(FieldSpec.builder(fieldHolder.type.getTypeName(), fieldHolder.fieldName[0])
-                    .addModifiers(Modifier.PUBLIC)
-                    .build()
-            );
+            if (fieldHolder.type instanceof DynamicFieldType) {
+                String fixedClass = fieldHolder.type.getTypeName().toString();//+Constants.FLATBUFFER_INJECT_SUFFIX;
+
+                builder2.addField(FieldSpec.builder(ClassName.bestGuess(fixedClass), fieldHolder.fieldName[0])
+                        .addModifiers(Modifier.PUBLIC)
+                        .build());
+            } else {
+                builder2.addField(FieldSpec.builder(fieldHolder.type.getTypeName(), fieldHolder.fieldName[0])
+                        .addModifiers(Modifier.PUBLIC)
+                        .build());
+            }
+
 
 
             entryCount++;

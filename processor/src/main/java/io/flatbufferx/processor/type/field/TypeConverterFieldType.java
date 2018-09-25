@@ -31,6 +31,7 @@ public class TypeConverterFieldType extends FieldType {
     }
 
     public ClassName getTypeConverterClassName() {
+
         return mTypeConverter;
     }
 
