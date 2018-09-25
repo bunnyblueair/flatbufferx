@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.google.flatbuffers.FlatBufferBuilder;
 import com.squareup.javapoet.*;
 import com.sun.tools.javac.code.Symbol;
+import io.flatbufferx.core.Constants;
 import io.flatbufferx.core.FlatBuffersX;
 import io.flatbufferx.core.JsonMapper;
 import io.flatbufferx.core.ParameterizedType;
@@ -13,6 +14,7 @@ import io.flatbufferx.core.typeconverters.TypeConverter;
 import io.flatbufferx.core.util.SimpleArrayMap;
 import io.flatbufferx.processor.type.Type;
 import io.flatbufferx.processor.type.Type.ClassNameObjectMapper;
+import io.flatbufferx.processor.type.field.FieldType;
 import io.flatbufferx.processor.type.field.ParameterizedTypeField;
 import io.flatbufferx.processor.type.field.TypeConverterFieldType;
 import io.flatbufferx.processor.util.FieldConvertHelper;
@@ -159,10 +161,13 @@ public class ObjectMapperInjector {
         addFieldInObject(builder);
         addUsedJsonMapperVariables(builder);
         addUsedTypeConverterMethods(builder);
-        builder.addMethod(getBean2FlatBuffers());
+        builder.addMethod(toFlatBuffer());
+        builder.addMethod(toFlatBufferOffset());
+        builder.addMethod(flatBufferToBean());
         //  builder.addType(TypeSpec.classBuilder(ClassName.get(FlatBufferBuilder.class)).build())
         return builder.build();
     }
+
 
     private MethodSpec getParseMethod() {
         MethodSpec.Builder builder = MethodSpec.methodBuilder("parse")
@@ -242,7 +247,7 @@ public class ObjectMapperInjector {
         return builder.build();
     }
 
-    private MethodSpec getBean2FlatBuffers() {
+    private MethodSpec toFlatBuffer() {
         MethodSpec.Builder builder = MethodSpec.methodBuilder("toFlatBuffer")
                 .addAnnotation(Override.class)
                 .returns(ClassName.get(ByteBuffer.class))
@@ -256,6 +261,45 @@ public class ObjectMapperInjector {
         insertBean2FlatBufferObjStatements(builder);
 
         return builder.build();
+    }
+
+    private MethodSpec flatBufferToBean() {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("flatBufferToBean")
+                .addAnnotation(Override.class)
+                .returns(ClassName.bestGuess(mJsonObjectHolder.injectedClassName))
+                .addModifiers(Modifier.PUBLIC)
+
+                .addParameter(ClassName.get(Object.class), "object")
+//                .addParameter(JsonGenerator.class, JSON_GENERATOR_VARIABLE_NAME)
+//                .addParameter(boolean.class, "writeStartAndEnd")
+                .addException(IOException.class);
+
+        insertFlatBufferToBean(builder);
+
+        return builder.build();
+        //   return null;
+    }
+
+    private MethodSpec toFlatBufferOffset() {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("toFlatBufferOffset")
+                .addAnnotation(Override.class)
+                .returns(TypeName.INT)
+                .addModifiers(Modifier.PUBLIC)
+
+                .addParameter(ClassName.get(FlatBufferBuilder.class), "bufferBuilder")
+//                .addParameter(JsonGenerator.class, JSON_GENERATOR_VARIABLE_NAME)
+//                .addParameter(boolean.class, "writeStartAndEnd")
+                .addException(IOException.class);
+
+        inserttToFlatBufferOffset(builder);
+
+        return builder.build();
+        //    return null;
+
+    }
+
+    private void inserttToFlatBufferOffset(MethodSpec.Builder builder) {
+        builder.addStatement("return -1");
     }
 
     private void insertSerializeStatements(MethodSpec.Builder builder) {
@@ -294,6 +338,60 @@ public class ObjectMapperInjector {
                 .endControlFlow();
     }
 
+    private void insertFlatBufferToBean(MethodSpec.Builder builder) {
+        /**
+         *         Repo repo = (Repo) object;
+         *         this.fullName = repo.fullName();
+         *         this.htmlUrl = repo.htmlUrl();
+         *         this.description = repo.description();
+         *         this.id = repo.id();
+         *         this.name = repo.name();
+         *         UserFB owner = new UserFB();
+         *         owner.flatBufferToBean(repo.owner());
+         *         this.owner = owner;
+         *         return this;
+         */
+        //  mJsonObjectHolder.cr
+        //todo fixme
+        builder.addStatement("$T flatObj = ($T) object", mJsonObjectHolder.objectTypeName,mJsonObjectHolder.objectTypeName);
+        for (String methodName : mJsonObjectHolder.fieldMap.keySet()) {
+            JsonFieldHolder fieldHolder = mJsonObjectHolder.fieldMap.get(methodName);
+            if (fieldHolder.methodShouldbeList) {
+                builder.addStatement("$N = new ArrayList<>();",methodName);
+                builder.beginControlFlow(" for (int i = 0; i < flatObj.$N(); i++)",
+                        FieldConvertHelper.lineToHump(String.format("%s_length", methodName)));
+//                RepoFB repoFB=new RepoFB();
+//                repoFB.flatBufferToBean(reposList.repos(i));
+//                repos.add(i, repoFB);
+                FieldType fieldType = FieldType.fieldTypeFor(fieldHolder.receiverType.getTypeName().toString() + Constants.FLATBUFFER_INJECT_SUFFIX);
+                builder.addStatement("$T obj=new $T()", fieldType.getTypeName(), fieldType.getTypeName());
+                builder.addStatement("obj.flatBufferToBean(flatObj.$N(i))",methodName);
+                builder.addStatement("$N.add(obj)",methodName);
+                builder.endControlFlow();
+               // fieldHolder.receiverType
+//                for (int i = 0; i < reposList.reposLength(); i++) {
+//                    RepoFB repoFB=new RepoFB();
+//                    repoFB.flatBufferToBean(reposList.repos(i));
+//                    repos.add(i, repoFB);
+//                }
+            } else {
+                builder.addStatement("this.$N = flatObj.$N()", methodName, methodName);
+            }
+        }
+
+
+//        Object[] args2 = new Object[args.length + 2];
+//        System.arraycopy(args, 0, args2, 2, args.length);
+//        args2[0] = mJsonObjectHolder.objectTypeName;
+//        args2[1] = mJsonObjectHolder.createMethod.getSimpleName().toString();
+//        System.err.println(stringBuffer.toString());
+//        builder.addStatement(stringBuffer.toString(), args2);
+
+        //  builder.addStatement("return bufferBuilder.dataBuffer()");
+        //  builder.endControlFlow();
+        builder.addStatement("return this");
+    }
+
     private void insertBean2FlatBufferObjStatements(MethodSpec.Builder builder) {
         //todo fixme
 //        if (!TextUtils.isEmpty(mJsonObjectHolder.preSerializeCallback)) {
@@ -323,10 +421,10 @@ public class ObjectMapperInjector {
                 // builder.addStatement("object.$L",name);
                 System.err.println("==" + name);
                 stringBuffer.append("$L,");
-                args[i] = CodeBlock.of("object.$L",name);
+                args[i] = CodeBlock.of("this.$L", name);
             } else {
-                String nameFix= name.substring(0, name.lastIndexOf("offset"));
-                System.err.println("==" +nameFix);
+                String nameFix = name.substring(0, name.lastIndexOf("offset"));
+                System.err.println("==" + nameFix);
                 stringBuffer.append("$L,");
                 //if (nameFix)
                 JsonFieldHolder jsonFieldHolder = mJsonObjectHolder.fieldMap.get(nameFix);
@@ -337,12 +435,12 @@ public class ObjectMapperInjector {
                         continue;
                     }
                 }
-                args[i] = CodeBlock.of("bufferBuilder.createString(object.$L)",nameFix);
-                if (nameFix.equalsIgnoreCase("owner")){
+                args[i] = CodeBlock.of("bufferBuilder.createString(object.$L)", nameFix);
+                if (nameFix.equalsIgnoreCase("owner")) {
                     //todo fixme
                     args[i] = i;
                 }
-              //  args[i] = i;
+                //  args[i] = i;
             }
 
 
