@@ -77,8 +77,8 @@
         publish = false
 
         pkg {
-            repo = 'FlatBufferX'
-            userOrg = 'FlatBufferX'
+            repo = 'flatbufferx'
+            userOrg = 'flatbuffersx'
             name = project.ext.artifactId
             desc = 'flat code.'
             websiteUrl = 'https://gitlab.com/FlatBuffersX/flatbufferx'
