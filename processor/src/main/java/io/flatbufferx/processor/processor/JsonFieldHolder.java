@@ -29,73 +29,6 @@ public class JsonFieldHolder {
     public Type returnsType;
     public boolean methodShouldbeList = false;
 
-    public String fill(Element element, Elements elements, Types types, String[] fieldNames, TypeMirror typeConverterType, JsonObjectHolder objectHolder, boolean shouldParse, boolean shouldSerialize) {
-        if (fieldNames == null || fieldNames.length == 0) {
-            String defaultFieldName = element.getSimpleName().toString();
-
-            switch (objectHolder.fieldNamingPolicy) {
-                case LOWER_CASE_WITH_UNDERSCORES:
-                    defaultFieldName = TextUtils.toLowerCaseWithUnderscores(defaultFieldName);
-                    break;
-            }
-
-            fieldNames = new String[]{defaultFieldName};
-        }
-        fieldName = fieldNames;
-
-        this.shouldParse = shouldParse;
-        this.shouldSerialize = shouldSerialize;
-
-        setterMethod = getSetter(element, elements);
-        getterMethod = getGetter(element, elements);
-
-        type = Type.typeFor(element.asType(), typeConverterType, elements, types);
-        return ensureValidType(type, element);
-    }
-
-    public String fillWithMethod(Elements elements, Types types, Symbol.MethodSymbol enclosedElement, TypeMirror typeConverterType, JsonObjectHolder objectHolder,
-                                 boolean parse, boolean shouldParse, boolean shouldSerialize, boolean methodShouldbeList) {
-
-        receiverType = FieldType.fieldTypeFor(enclosedElement.owner.getQualifiedName().toString());
-        if (!enclosedElement.getReturnType().isPrimitive())
-        {  returnsType =FieldType.fieldTypeFor(enclosedElement.getReturnType().toString());
-
-        }
-        fieldName = new String[]{enclosedElement.getSimpleName().toString()};
-        // objectHolder.fieldMap
-        this.shouldParse = shouldParse;
-        this.shouldSerialize = shouldSerialize;
-
-        // setterMethod = getSetter(element, elements);
-        //  getterMethod = getGetter(element, elements);
-        //   type=new Ty
-        this.methodShouldbeList = methodShouldbeList;
-        if (methodShouldbeList) {
-            type = Type.typeForMethod(typeConverterType, elements, types, enclosedElement, true);
-
-        } else {
-            type = Type.typeForMethod(typeConverterType, elements, types, enclosedElement, false);
-        }
-        return null;//ensureValidType(type, TypeName.get(enclosedElement.getReturnType()));
-    }
-
-    private String ensureValidType(Type type, Element element) {
-        if (type == null) {
-            return "Type could not be determined for " + element.toString();
-        } else {
-            if (type instanceof CollectionType) {
-                for (Type parameterType : type.parameterTypes) {
-                    String errorMessage = ensureValidType(parameterType, element);
-                    if (errorMessage != null) {
-                        return errorMessage;
-                    }
-                }
-            }
-
-            return null;
-        }
-    }
-
     public static String getGetter(Element element, Elements elements) {
         TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
@@ -172,6 +105,73 @@ public class JsonFieldHolder {
         }
 
         return null;
+    }
+
+    public String fill(Element element, Elements elements, Types types, String[] fieldNames, TypeMirror typeConverterType, JsonObjectHolder objectHolder, boolean shouldParse, boolean shouldSerialize) {
+        if (fieldNames == null || fieldNames.length == 0) {
+            String defaultFieldName = element.getSimpleName().toString();
+
+            switch (objectHolder.fieldNamingPolicy) {
+                case LOWER_CASE_WITH_UNDERSCORES:
+                    defaultFieldName = TextUtils.toLowerCaseWithUnderscores(defaultFieldName);
+                    break;
+            }
+
+            fieldNames = new String[]{defaultFieldName};
+        }
+        fieldName = fieldNames;
+
+        this.shouldParse = shouldParse;
+        this.shouldSerialize = shouldSerialize;
+
+        setterMethod = getSetter(element, elements);
+        getterMethod = getGetter(element, elements);
+
+        type = Type.typeFor(element.asType(), typeConverterType, elements, types);
+        return ensureValidType(type, element);
+    }
+
+    public String fillWithMethod(Elements elements, Types types, Symbol.MethodSymbol enclosedElement, TypeMirror typeConverterType, JsonObjectHolder objectHolder,
+                                 boolean parse, boolean shouldParse, boolean shouldSerialize, boolean methodShouldbeList) {
+
+        receiverType = FieldType.fieldTypeFor(enclosedElement.owner.getQualifiedName().toString());
+        if (!enclosedElement.getReturnType().isPrimitive()) {
+            returnsType = FieldType.fieldTypeFor(enclosedElement.getReturnType().toString());
+
+        }
+        fieldName = new String[]{enclosedElement.getSimpleName().toString()};
+        // objectHolder.fieldMap
+        this.shouldParse = shouldParse;
+        this.shouldSerialize = shouldSerialize;
+
+        // setterMethod = getSetter(element, elements);
+        //  getterMethod = getGetter(element, elements);
+        //   type=new Ty
+        this.methodShouldbeList = methodShouldbeList;
+        if (methodShouldbeList) {
+            type = Type.typeForMethod(typeConverterType, elements, types, enclosedElement, true);
+
+        } else {
+            type = Type.typeForMethod(typeConverterType, elements, types, enclosedElement, false);
+        }
+        return null;//ensureValidType(type, TypeName.get(enclosedElement.getReturnType()));
+    }
+
+    private String ensureValidType(Type type, Element element) {
+        if (type == null) {
+            return "Type could not be determined for " + element.toString();
+        } else {
+            if (type instanceof CollectionType) {
+                for (Type parameterType : type.parameterTypes) {
+                    String errorMessage = ensureValidType(parameterType, element);
+                    if (errorMessage != null) {
+                        return errorMessage;
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 
     public boolean hasSetter() {

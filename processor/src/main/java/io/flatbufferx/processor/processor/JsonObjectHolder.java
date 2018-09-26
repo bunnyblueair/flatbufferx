@@ -28,15 +28,29 @@ public class JsonObjectHolder {
     public final boolean serializeNullObjects;
     public final boolean serializeNullCollectionElements;
     public final List<? extends TypeParameterElement> typeParameters;
-    public List<Symbol.VarSymbol> createFlatBufferMethodArgs;
-    public String onCompleteCallback;
-    public String preSerializeCallback;
-    public  Symbol.MethodSymbol createMethod;
-
     // Using a TreeMap now to keep the entries sorted. This ensures that code is
     // always written the exact same way, no matter which JDK you're using.
     public final Map<String, JsonFieldHolder> fieldMap = new TreeMap<>();
+    public List<Symbol.VarSymbol> createFlatBufferMethodArgs;
+    public String onCompleteCallback;
+    public String preSerializeCallback;
+    public Symbol.MethodSymbol createMethod;
     public boolean fileCreated;
+
+    private JsonObjectHolder(JsonObjectHolderBuilder builder) {
+        packageName = builder.packageName;
+        injectedClassName = builder.injectedClassName;
+        objectTypeName = builder.objectTypeName;
+        isAbstractClass = builder.isAbstractClass;
+        parentTypeName = builder.parentTypeName;
+        parentTypeParameters = builder.parentTypeParameters;
+        parentUsedTypeParameters = builder.parentUsedTypeParameters;
+        fieldDetectionPolicy = builder.fieldDetectionPolicy;
+        fieldNamingPolicy = builder.fieldNamingPolicy;
+        serializeNullObjects = builder.serializeNullObjects;
+        serializeNullCollectionElements = builder.serializeNullCollectionElements;
+        typeParameters = builder.typeParameters;
+    }
 
     public boolean hasParentClass() {
         return parentTypeName != null;
@@ -52,25 +66,10 @@ public class JsonObjectHolder {
                     usedParameters.add(TypeVariableName.get(parameter));
                 }
             }
-            return ParameterizedTypeName.get((ClassName)parentTypeName, usedParameters.toArray(new TypeName[usedParameters.size()]));
+            return ParameterizedTypeName.get((ClassName) parentTypeName, usedParameters.toArray(new TypeName[usedParameters.size()]));
         } else {
             return parentTypeName;
         }
-    }
-
-    private JsonObjectHolder(JsonObjectHolderBuilder builder) {
-        packageName = builder.packageName;
-        injectedClassName = builder.injectedClassName;
-        objectTypeName = builder.objectTypeName;
-        isAbstractClass = builder.isAbstractClass;
-        parentTypeName = builder.parentTypeName;
-        parentTypeParameters = builder.parentTypeParameters;
-        parentUsedTypeParameters = builder.parentUsedTypeParameters;
-        fieldDetectionPolicy = builder.fieldDetectionPolicy;
-        fieldNamingPolicy = builder.fieldNamingPolicy;
-        serializeNullObjects = builder.serializeNullObjects;
-        serializeNullCollectionElements = builder.serializeNullCollectionElements;
-        typeParameters = builder.typeParameters;
     }
 
     public static class JsonObjectHolderBuilder {

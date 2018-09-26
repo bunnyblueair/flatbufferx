@@ -1,14 +1,10 @@
 package io.flatbufferx.processor.type.collection;
 
-import com.squareup.javapoet.ClassName;
-import io.flatbufferx.core.Constants;
-import io.flatbufferx.processor.processor.TextUtils;
-import io.flatbufferx.processor.type.Type;
 import com.fasterxml.jackson.core.JsonToken;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.MethodSpec.Builder;
-import io.flatbufferx.processor.type.field.DynamicFieldType;
-import io.flatbufferx.processor.type.field.FieldType;
+import io.flatbufferx.processor.processor.TextUtils;
+import io.flatbufferx.processor.type.Type;
 
 import java.util.List;
 
@@ -74,7 +70,7 @@ public abstract class SingleParameterCollectionType extends CollectionType {
                 .beginControlFlow("if ($L != null)", collectionVariableName);
 
         //    if (isObjectProperty) {
-            builder.addStatement("$L.writeFieldName($S)", JSON_GENERATOR_VARIABLE_NAME, fieldName);
+        builder.addStatement("$L.writeFieldName($S)", JSON_GENERATOR_VARIABLE_NAME, fieldName);
         //   }
 
         builder
@@ -90,7 +86,7 @@ public abstract class SingleParameterCollectionType extends CollectionType {
                     .addStatement("$L.writeNull()", JSON_GENERATOR_VARIABLE_NAME);
         }
 
-            builder
+        builder
                 .endControlFlow()
                 .endControlFlow()
                 .addStatement("$L.writeEndArray()", JSON_GENERATOR_VARIABLE_NAME)

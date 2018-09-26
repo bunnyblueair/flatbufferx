@@ -1,11 +1,10 @@
 package io.flatbufferx.processor.type.field;
 
 import com.squareup.javapoet.ClassName;
-import io.flatbufferx.core.Constants;
-import io.flatbufferx.processor.processor.ObjectMapperInjector;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeName;
-import io.flatbufferx.processor.type.Type;
+import io.flatbufferx.core.Constants;
+import io.flatbufferx.processor.processor.ObjectMapperInjector;
 
 import java.util.List;
 import java.util.Set;
@@ -17,6 +16,7 @@ public class DynamicFieldType extends FieldType {
 
     private TypeName mTypeName;
     private TypeName mTypeNameForBean;
+
     public DynamicFieldType(TypeName typeName) {
 
         mTypeName = ClassName.bestGuess(typeName.toString() + Constants.FLATBUFFER_INJECT_SUFFIX);

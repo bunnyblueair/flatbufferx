@@ -1,12 +1,12 @@
 package io.flatbufferx.processor.type.collection;
 
-import io.flatbufferx.processor.processor.TextUtils;
-import io.flatbufferx.processor.type.Type;
 import com.fasterxml.jackson.core.JsonToken;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeName;
+import io.flatbufferx.processor.processor.TextUtils;
+import io.flatbufferx.processor.type.Type;
 
 import java.util.ArrayList;
 import java.util.List;

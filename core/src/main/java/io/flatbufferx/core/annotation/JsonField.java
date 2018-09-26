@@ -23,7 +23,9 @@ public @interface JsonField {
      */
     String[] name() default {};
 
-    /** The TypeConverter that will be used to parse/serialize this variable. */
+    /**
+     * The TypeConverter that will be used to parse/serialize this variable.
+     */
     Class typeConverter() default void.class;
 
 }

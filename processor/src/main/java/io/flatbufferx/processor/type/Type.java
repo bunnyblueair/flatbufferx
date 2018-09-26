@@ -20,12 +20,6 @@ public abstract class Type {
 
     public final List<Type> parameterTypes;
 
-    public abstract TypeName getTypeName();
-    public abstract String getParameterizedTypeString();
-    public abstract Object[] getParameterizedTypeStringArgs();
-    public abstract void parse(MethodSpec.Builder builder, int depth, String setter, Object... setterFormatArgs);
-    public abstract void serialize(MethodSpec.Builder builder, int depth, String fieldName, List<String> processedFieldNames, String getter, boolean isObjectProperty, boolean checkIfNull, boolean writeIfNull, boolean writeCollectionElementIfNull);
-
     public Type() {
         parameterTypes = new ArrayList<>();
     }
@@ -36,7 +30,7 @@ public abstract class Type {
 
         Type type;
         if (!hasTypeConverter && typeMirror instanceof ArrayType) {
-            TypeMirror arrayTypeMirror = ((ArrayType)typeMirror).getComponentType();
+            TypeMirror arrayTypeMirror = ((ArrayType) typeMirror).getComponentType();
             type = new ArrayCollectionType(Type.typeFor(arrayTypeMirror, null, elements, types));
         } else if (!hasTypeConverter && !genericClassTypeMirror.toString().equals(typeMirror.toString())) {
             type = CollectionType.collectionTypeFor(typeMirror, genericClassTypeMirror, elements, types);
@@ -47,7 +41,8 @@ public abstract class Type {
                 }
                 try {
                     type = new ParameterizedTypeField(TypeName.get(typeMirror));
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
             }
         } else {
             type = FieldType.fieldTypeFor(typeMirror, typeConverterType, elements, types);
@@ -57,7 +52,7 @@ public abstract class Type {
     }
 
     public static Type typeForMethod(TypeMirror typeConverterType, Elements elements, Types types, Symbol.MethodSymbol enclosedElement, boolean shouldBeList) {
-      //  TypeMirror genericClassTypeMirror = types.erasure(typeMirror);
+        //  TypeMirror genericClassTypeMirror = types.erasure(typeMirror);
         boolean hasTypeConverter = typeConverterType != null && !typeConverterType.toString().equals("void");
 
         Type type;
@@ -86,14 +81,25 @@ public abstract class Type {
 //        } else {
 //            type = FieldType.fieldTypeForMethod(typeMirror, typeConverterType, elements, types);
 //        }
-        type = FieldType.fieldTypeForMethod( elements, types,enclosedElement);
+        type = FieldType.fieldTypeForMethod(elements, types, enclosedElement);
         return type;
     }
+
+    public abstract TypeName getTypeName();
+
+    public abstract String getParameterizedTypeString();
+
+    public abstract Object[] getParameterizedTypeStringArgs();
+
+    public abstract void parse(MethodSpec.Builder builder, int depth, String setter, Object... setterFormatArgs);
+
+    public abstract void serialize(MethodSpec.Builder builder, int depth, String fieldName, List<String> processedFieldNames, String getter, boolean isObjectProperty, boolean checkIfNull, boolean writeIfNull, boolean writeCollectionElementIfNull);
+
     protected Object[] expandStringArgs(Object... args) {
         List<Object> argList = new ArrayList<>();
         for (Object arg : args) {
             if (arg instanceof Object[]) {
-                Collections.addAll(argList, (Object[])arg);
+                Collections.addAll(argList, (Object[]) arg);
             } else {
                 argList.add(arg);
             }
@@ -148,7 +154,7 @@ public abstract class Type {
             } else if (o == null || getClass() != o.getClass()) {
                 return false;
             } else {
-                return objectMapper.equals(((ClassNameObjectMapper)o).objectMapper);
+                return objectMapper.equals(((ClassNameObjectMapper) o).objectMapper);
             }
         }
 

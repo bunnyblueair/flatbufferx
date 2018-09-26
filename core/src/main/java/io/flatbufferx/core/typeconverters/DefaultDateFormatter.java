@@ -7,7 +7,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/** Attempt at making a DateFormat that can actually parse ISO 8601 dates correctly */
+/**
+ * Attempt at making a DateFormat that can actually parse ISO 8601 dates correctly
+ */
 public class DefaultDateFormatter extends SimpleDateFormat {
 
     public DefaultDateFormatter() {
@@ -15,7 +17,9 @@ public class DefaultDateFormatter extends SimpleDateFormat {
         setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    /** Replace ending Z's with +0000 so Java's SimpleDateFormat can handle it correctly */
+    /**
+     * Replace ending Z's with +0000 so Java's SimpleDateFormat can handle it correctly
+     */
     private String getFixedInputString(String input) {
         return input != null ? input.replaceAll("Z$", "+0000") : null;
     }

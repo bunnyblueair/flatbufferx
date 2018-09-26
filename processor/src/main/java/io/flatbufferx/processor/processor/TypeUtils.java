@@ -1,14 +1,13 @@
 package io.flatbufferx.processor.processor;
 
-import io.flatbufferx.core.Constants;
 import com.squareup.javapoet.ClassName;
-
-import java.util.List;
+import io.flatbufferx.core.Constants;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import java.util.List;
 
 public class TypeUtils {
 
@@ -38,7 +37,7 @@ public class TypeUtils {
             return null;
         }
 
-        DeclaredType declaredType = (DeclaredType)typeMirror;
-        return (List<TypeMirror>)declaredType.getTypeArguments();
+        DeclaredType declaredType = (DeclaredType) typeMirror;
+        return (List<TypeMirror>) declaredType.getTypeArguments();
     }
 }

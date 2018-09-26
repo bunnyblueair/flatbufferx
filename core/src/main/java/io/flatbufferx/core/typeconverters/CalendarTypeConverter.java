@@ -11,7 +11,7 @@ import java.util.Calendar;
 public abstract class CalendarTypeConverter implements TypeConverter<Calendar> {
 
     // DateFormat is not thread-safe, so wrap it in a ThreadLocal
-    private final ThreadLocal<DateFormat> mDateFormat = new ThreadLocal<DateFormat>(){
+    private final ThreadLocal<DateFormat> mDateFormat = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
             return getDateFormat();
@@ -39,7 +39,9 @@ public abstract class CalendarTypeConverter implements TypeConverter<Calendar> {
         }
     }
 
-    /** Called to get the DateFormat used to parse and serialize objects */
+    /**
+     * Called to get the DateFormat used to parse and serialize objects
+     */
     public abstract DateFormat getDateFormat();
 
 }

@@ -19,8 +19,34 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention(CLASS)
 public @interface FlatBufferSrc {
 
+    /**
+     * Allows control over which fields will be used by LoganSquare for parsing and
+     * serializing. By default, only fields annotated with @JsonField will be used.
+     */
+    FieldDetectionPolicy fieldDetectionPolicy() default FieldDetectionPolicy.ANNOTATIONS_ONLY;
+
+    /**
+     * Allows control over what field names LoganSquare expects in the JSON when parsing
+     * and how the fields are named while serializing. By default, field names match
+     * the name of the Java variable unless the 'name' parameter is passed into a
+     * field's @JsonField annotation.
+     */
+    FieldNamingPolicy fieldNamingPolicy() default FieldNamingPolicy.FIELD_NAME;
+
+    /**
+     * Allows control over whether or not null fields are serialized. Defaults to false.
+     */
+    boolean serializeNullObjects() default false;
+
+    /**
+     * Allows control over whether or not null collection and array elements are serialized. Defaults to false.
+     */
+    boolean serializeNullCollectionElements() default false;
+
     public enum FieldDetectionPolicy {
-        /** Only parse and serialize fields annotated with @JsonField */
+        /**
+         * Only parse and serialize fields annotated with @JsonField
+         */
         ANNOTATIONS_ONLY,
 
         /**
@@ -50,28 +76,4 @@ public @interface FlatBufferSrc {
          */
         LOWER_CASE_WITH_UNDERSCORES
     }
-
-    /**
-     * Allows control over which fields will be used by LoganSquare for parsing and
-     * serializing. By default, only fields annotated with @JsonField will be used.
-     */
-    FieldDetectionPolicy fieldDetectionPolicy() default FieldDetectionPolicy.ANNOTATIONS_ONLY;
-
-    /**
-     * Allows control over what field names LoganSquare expects in the JSON when parsing
-     * and how the fields are named while serializing. By default, field names match
-     * the name of the Java variable unless the 'name' parameter is passed into a
-     * field's @JsonField annotation.
-     */
-    FieldNamingPolicy fieldNamingPolicy() default FieldNamingPolicy.FIELD_NAME;
-
-    /**
-     * Allows control over whether or not null fields are serialized. Defaults to false.
-     */
-    boolean serializeNullObjects() default false;
-
-    /**
-     * Allows control over whether or not null collection and array elements are serialized. Defaults to false.
-     */
-    boolean serializeNullCollectionElements() default false;
 }
