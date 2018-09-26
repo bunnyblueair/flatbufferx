@@ -15,7 +15,7 @@ plugins {
 }
 
 group 'io.flatbufferx'
-version '2.1.0'
+
 
 sourceCompatibility = 1.8
 
