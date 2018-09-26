@@ -44,8 +44,13 @@ public class DynamicFieldType extends FieldType {
         if (!mTypeName.isPrimitive() && checkIfNull) {
             builder.beginControlFlow("if ($L != null)", getter);
         }
-
-        builder.addStatement(ObjectMapperInjector.getTypeConverterGetter(ClassName.bestGuess(mTypeName.toString())) + "().serialize($L, $S, $L, $L)", getter, isObjectProperty ? fieldName : null, isObjectProperty, JSON_GENERATOR_VARIABLE_NAME);
+        if (processedFieldNames.isEmpty()) {
+            builder.addStatement("jsonGenerator.writeFieldName(\"$N\")", fieldName);
+        }
+//serialize(T object, JsonGenerator generator, boolean writeStartAndEnd)
+        // builder.addStatement("jsonGenerator.writeFieldName(\"$N\")",fieldName);
+        builder.addStatement(ObjectMapperInjector.getTypeConverterGetter(ClassName.bestGuess(mTypeName.toString())) +
+                "().serialize($L, $N, $L)", getter, JSON_GENERATOR_VARIABLE_NAME, true);
         if (!mTypeName.isPrimitive() && checkIfNull) {
             if (writeIfNull) {
                 builder.nextControlFlow("else");

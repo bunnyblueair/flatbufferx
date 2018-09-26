@@ -201,6 +201,7 @@ public class FlatBuffersX {
         try {
             return mapperFor((Class<E>) object.getClass()).serialize(object);
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -395,6 +396,14 @@ public class FlatBuffersX {
         JsonMapper<E> mapper = getMapper(cls);
 
         if (mapper == null) {
+            try {
+                OBJECT_MAPPERS.put(cls, (JsonMapper) cls.newInstance());
+                return OBJECT_MAPPERS.get(cls);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
             throw new NoSuchMapperException(cls);
         } else {
             return mapper;
@@ -427,8 +436,17 @@ public class FlatBuffersX {
      */
     @SuppressWarnings("unchecked")
     public static <E> TypeConverter<E> typeConverterFor(Class<E> cls) throws NoSuchTypeConverterException {
+
         TypeConverter<E> typeConverter = TYPE_CONVERTERS.get(cls);
         if (typeConverter == null) {
+            try {
+                TYPE_CONVERTERS.put(cls, (TypeConverter) cls.newInstance());
+                return TYPE_CONVERTERS.get(cls);
+            } catch (InstantiationException e) {
+                //  e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // e.printStackTrace();
+            }
             throw new NoSuchTypeConverterException(cls);
         }
         return typeConverter;

@@ -73,9 +73,9 @@ public abstract class SingleParameterCollectionType extends CollectionType {
                 .addStatement(instanceCreator, instanceCreatorArgs)
                 .beginControlFlow("if ($L != null)", collectionVariableName);
 
-        if (isObjectProperty) {
+        //    if (isObjectProperty) {
             builder.addStatement("$L.writeFieldName($S)", JSON_GENERATOR_VARIABLE_NAME, fieldName);
-        }
+        //   }
 
         builder
                 .addStatement("$L.writeStartArray()", JSON_GENERATOR_VARIABLE_NAME)

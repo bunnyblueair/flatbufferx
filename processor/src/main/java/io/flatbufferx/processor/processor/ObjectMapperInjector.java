@@ -555,16 +555,16 @@ public class ObjectMapperInjector {
 
         for (TypeName usedTypeConverter : usedTypeConverters) {
             final String variableName = getTypeConverterVariableName(usedTypeConverter);
-            builder.addField(FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(TypeConverter.class), usedTypeConverter), variableName)
+            builder.addField(FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), usedTypeConverter), variableName)
                     .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
                     .build()
             );
 
             builder.addMethod(MethodSpec.methodBuilder(getTypeConverterGetter(usedTypeConverter))
                     .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                    .returns(ParameterizedTypeName.get(ClassName.get(TypeConverter.class), usedTypeConverter))
+                    .returns(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), usedTypeConverter))
                     .beginControlFlow("if ($L == null)", variableName)
-                    .addStatement("$L = $T.typeConverterFor($T.class)", variableName, FlatBuffersX.class, usedTypeConverter)
+                    .addStatement("$L = $T.mapperFor($T.class)", variableName, FlatBuffersX.class, usedTypeConverter)
                     .endControlFlow()
                     .addStatement("return $L", variableName)
                     .build()

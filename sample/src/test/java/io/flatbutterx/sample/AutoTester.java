@@ -3,6 +3,7 @@ package io.flatbutterx.sample;
 //import io.flatbutterx.sample.loader.Main.RepoFB;
 //import io.flatbutterx.sample.loader.Main.ReposListFB;
 
+import io.flatbufferx.core.FlatBuffersX;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,7 +45,9 @@ public class AutoTester {
             e.printStackTrace();
         }
 
-
+        String data = FlatBuffersX.serialize(reposListFB1);
+        //   String data=  reposListFB1.serialize(reposListFB1);
+        System.out.println(data);
         //  RepoFB
     }
 }

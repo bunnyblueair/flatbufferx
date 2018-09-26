@@ -48,6 +48,6 @@ dependencies {
     // LoganSquare runtime library
     compile project(':core')
     // Jackson libraries for comparison
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.6'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.7'
 }
