@@ -23,9 +23,9 @@ public class FlatBuffersX {
     public static final JsonFactory JSON_FACTORY = new JsonFactory();
     protected static final ListMapper LIST_MAPPER = new ListMapper();
     protected static final MapMapper MAP_MAPPER = new MapMapper();
-    protected static final SimpleArrayMap<Class, JsonMapper> OBJECT_MAPPERS = new SimpleArrayMap<Class, JsonMapper>(32);
+    protected static final SimpleArrayMap<Class, FlatBufferMapper> OBJECT_MAPPERS = new SimpleArrayMap<Class, FlatBufferMapper>(32);
     protected static final SimpleArrayMap<Class, Class> CLASS_MAPPERS = new SimpleArrayMap<Class, Class>(32);
-    protected static final ConcurrentHashMap<ParameterizedType, JsonMapper> PARAMETERIZED_OBJECT_MAPPERS = new ConcurrentHashMap<ParameterizedType, JsonMapper>();
+    protected static final ConcurrentHashMap<ParameterizedType, FlatBufferMapper> PARAMETERIZED_OBJECT_MAPPERS = new ConcurrentHashMap<ParameterizedType, FlatBufferMapper>();
 
     protected static final SimpleArrayMap<Class, TypeConverter> TYPE_CONVERTERS = new SimpleArrayMap<>();
 
@@ -293,8 +293,8 @@ public class FlatBuffersX {
     }
 
     @SuppressWarnings("unchecked")
-    /*package*/ static <E> JsonMapper<E> getMapper(Class<E> cls) {
-        JsonMapper<E> mapper = OBJECT_MAPPERS.get(cls);
+    /*package*/ static <E> FlatBufferMapper<E> getMapper(Class<E> cls) {
+        FlatBufferMapper<E> mapper = OBJECT_MAPPERS.get(cls);
         if (mapper == null) {
             Class<?> mapperClass = CLASS_MAPPERS.get(cls);
             // The only way the mapper wouldn't already be loaded into OBJECT_MAPPERS is if it was compiled separately, but let's handle it anyway
@@ -303,7 +303,7 @@ public class FlatBuffersX {
 
                     mapperClass = Class.forName(cls.getName() + Constants.FLATBUFFER_INJECT_SUFFIX);
                 }
-                mapper = (JsonMapper<E>) mapperClass.newInstance();
+                mapper = (FlatBufferMapper<E>) mapperClass.newInstance();
                 OBJECT_MAPPERS.put(cls, mapper);
             } catch (Exception ignored) {
             }
@@ -312,13 +312,13 @@ public class FlatBuffersX {
     }
 
     @SuppressWarnings("unchecked")
-    private static <E> JsonMapper<E> getMapper(ParameterizedType<E> type, SimpleArrayMap<ParameterizedType, JsonMapper> partialMappers) {
+    private static <E> FlatBufferMapper<E> getMapper(ParameterizedType<E> type, SimpleArrayMap<ParameterizedType, FlatBufferMapper> partialMappers) {
         if (type.typeParameters.size() == 0) {
             return getMapper((Class<E>) type.rawType);
         }
 
         if (partialMappers == null) {
-            partialMappers = new SimpleArrayMap<ParameterizedType, JsonMapper>();
+            partialMappers = new SimpleArrayMap<ParameterizedType, FlatBufferMapper>();
         }
 
         if (partialMappers.containsKey(type)) {
@@ -335,7 +335,7 @@ public class FlatBuffersX {
                 for (int i = 0; i < type.typeParameters.size(); i++) {
                     args[i + 1] = type.typeParameters.get(i);
                 }
-                JsonMapper<E> mapper = (JsonMapper<E>) constructor.newInstance(args);
+                FlatBufferMapper<E> mapper = (FlatBufferMapper<E>) constructor.newInstance(args);
                 PARAMETERIZED_OBJECT_MAPPERS.put(type, mapper);
                 return mapper;
             } catch (Exception ignored) {
@@ -369,12 +369,12 @@ public class FlatBuffersX {
      *
      * @param cls The class for which the JsonMapper should be fetched.
      */
-    public static <E> JsonMapper<E> mapperFor(Class<E> cls) throws NoSuchMapperException {
-        JsonMapper<E> mapper = getMapper(cls);
+    public static <E> FlatBufferMapper<E> mapperFor(Class<E> cls) throws NoSuchMapperException {
+        FlatBufferMapper<E> mapper = getMapper(cls);
 
         if (mapper == null) {
             try {
-                OBJECT_MAPPERS.put(cls, (JsonMapper) cls.newInstance());
+                OBJECT_MAPPERS.put(cls, (FlatBufferMapper) cls.newInstance());
                 return OBJECT_MAPPERS.get(cls);
             } catch (InstantiationException e) {
                 e.printStackTrace();
@@ -393,12 +393,12 @@ public class FlatBuffersX {
      * @param type The ParameterizedType for which the JsonMapper should be fetched.
      */
     @SuppressWarnings("unchecked")
-    public static <E> JsonMapper<E> mapperFor(ParameterizedType<E> type) throws NoSuchMapperException {
+    public static <E> FlatBufferMapper<E> mapperFor(ParameterizedType<E> type) throws NoSuchMapperException {
         return mapperFor(type, null);
     }
 
-    public static <E> JsonMapper<E> mapperFor(ParameterizedType<E> type, SimpleArrayMap<ParameterizedType, JsonMapper> partialMappers) throws NoSuchMapperException {
-        JsonMapper<E> mapper = getMapper(type, partialMappers);
+    public static <E> FlatBufferMapper<E> mapperFor(ParameterizedType<E> type, SimpleArrayMap<ParameterizedType, FlatBufferMapper> partialMappers) throws NoSuchMapperException {
+        FlatBufferMapper<E> mapper = getMapper(type, partialMappers);
         if (mapper == null) {
             throw new NoSuchMapperException(type.rawType);
         } else {

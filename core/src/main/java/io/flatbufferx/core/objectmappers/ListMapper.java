@@ -3,7 +3,7 @@ package io.flatbufferx.core.objectmappers;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import io.flatbufferx.core.FlatBuffersX;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Built-in mapper for List objects of an unknown type
  */
-public class ListMapper extends JsonMapper<List<Object>> {
+public class ListMapper extends FlatBufferMapper<List<Object>> {
 
     @Override
     public List<Object> parse(JsonParser jsonParser) throws IOException {

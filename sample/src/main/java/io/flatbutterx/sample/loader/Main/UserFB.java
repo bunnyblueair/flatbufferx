@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.google.flatbuffers.FlatBufferBuilder;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 import io.flatbutterx.sample.User;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.lang.SuppressWarnings;
 import java.nio.ByteBuffer;
 
 @SuppressWarnings("unsafe,unchecked")
-public final class UserFB extends JsonMapper<UserFB> {
+public final class UserFB extends FlatBufferMapper<UserFB> {
   public Long id;
 
   public String login;

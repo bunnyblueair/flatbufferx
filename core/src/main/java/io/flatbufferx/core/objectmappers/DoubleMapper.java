@@ -3,14 +3,14 @@ package io.flatbufferx.core.objectmappers;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 
 /**
  * Built-in mapper for Double objects
  */
-public class DoubleMapper extends JsonMapper<Double> {
+public class DoubleMapper extends FlatBufferMapper<Double> {
 
     @Override
     public Double parse(JsonParser jsonParser) throws IOException {

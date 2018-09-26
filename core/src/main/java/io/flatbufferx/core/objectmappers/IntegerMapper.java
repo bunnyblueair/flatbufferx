@@ -3,14 +3,14 @@ package io.flatbufferx.core.objectmappers;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 
 /**
  * Built-in mapper for Integer objects
  */
-public class IntegerMapper extends JsonMapper<Integer> {
+public class IntegerMapper extends FlatBufferMapper<Integer> {
 
     @Override
     public Integer parse(JsonParser jsonParser) throws IOException {

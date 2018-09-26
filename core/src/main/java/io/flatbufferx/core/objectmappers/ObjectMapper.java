@@ -3,7 +3,7 @@ package io.flatbufferx.core.objectmappers;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import io.flatbufferx.core.FlatBuffersX;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Built-in mapper for unknown types
  */
-public class ObjectMapper extends JsonMapper<Object> {
+public class ObjectMapper extends FlatBufferMapper<Object> {
 
     @Override
     public Object parse(JsonParser jsonParser) throws IOException {
@@ -66,7 +66,7 @@ public class ObjectMapper extends JsonMapper<Object> {
             FlatBuffersX.mapperFor(Map.class).serialize((Map<String, Object>) value, generator, writeStartAndEnd);
         } else {
             Class valueClass = value.getClass();
-            JsonMapper jsonMapper = FlatBuffersX.mapperFor(valueClass);
+            FlatBufferMapper jsonMapper = FlatBuffersX.mapperFor(valueClass);
 
             if (jsonMapper != null) {
                 if (writeStartAndEnd) {

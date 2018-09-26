@@ -7,7 +7,7 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import com.squareup.javapoet.*;
 import com.sun.tools.javac.code.Symbol;
 import io.flatbufferx.core.FlatBuffersX;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 import io.flatbufferx.core.ParameterizedType;
 import io.flatbufferx.core.util.SimpleArrayMap;
 import io.flatbufferx.processor.type.Type;
@@ -73,7 +73,7 @@ public class ObjectMapperInjector {
 
         builder.addAnnotation(AnnotationSpec.builder(SuppressWarnings.class).addMember("value", "\"unsafe,unchecked\"").build());
 
-        builder.superclass(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), ClassName.bestGuess(mJsonObjectHolder.injectedClassName)));
+        builder.superclass(ParameterizedTypeName.get(ClassName.get(FlatBufferMapper.class), ClassName.bestGuess(mJsonObjectHolder.injectedClassName)));
 
         for (TypeParameterElement typeParameterElement : mJsonObjectHolder.typeParameters) {
             builder.addTypeVariable(TypeVariableName.get((TypeVariable) typeParameterElement.asType()));
@@ -83,11 +83,11 @@ public class ObjectMapperInjector {
             FieldSpec.Builder parentMapperBuilder;
 
             if (mJsonObjectHolder.parentTypeParameters.size() == 0) {
-                parentMapperBuilder = FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), mJsonObjectHolder.parentTypeName), PARENT_OBJECT_MAPPER_VARIABLE_NAME)
+                parentMapperBuilder = FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(FlatBufferMapper.class), mJsonObjectHolder.parentTypeName), PARENT_OBJECT_MAPPER_VARIABLE_NAME)
                         .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                         .initializer("$T.mapperFor($T.class)", FlatBuffersX.class, mJsonObjectHolder.parentTypeName);
             } else {
-                parentMapperBuilder = FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), mJsonObjectHolder.getParameterizedParentTypeName()), PARENT_OBJECT_MAPPER_VARIABLE_NAME)
+                parentMapperBuilder = FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(FlatBufferMapper.class), mJsonObjectHolder.getParameterizedParentTypeName()), PARENT_OBJECT_MAPPER_VARIABLE_NAME)
                         .addModifiers(Modifier.PRIVATE);
 
                 if (mJsonObjectHolder.typeParameters.size() == 0) {
@@ -128,7 +128,7 @@ public class ObjectMapperInjector {
                     createdJsonMappers.add(jsonMapperVariableName);
 
                     // Add a JsonMapper reference
-                    builder.addField(FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), TypeVariableName.get(typeName)), jsonMapperVariableName)
+                    builder.addField(FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(FlatBufferMapper.class), TypeVariableName.get(typeName)), jsonMapperVariableName)
                             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                             .build());
 
@@ -136,7 +136,7 @@ public class ObjectMapperInjector {
                     constructorBuilder.addStatement("$L = $T.mapperFor($L, partialMappers)", jsonMapperVariableName, FlatBuffersX.class, typeArgumentName);
                 }
             }
-            constructorBuilder.addParameter(ParameterizedTypeName.get(ClassName.get(SimpleArrayMap.class), ClassName.get(ParameterizedType.class), ClassName.get(JsonMapper.class)), "partialMappers");
+            constructorBuilder.addParameter(ParameterizedTypeName.get(ClassName.get(SimpleArrayMap.class), ClassName.get(ParameterizedType.class), ClassName.get(FlatBufferMapper.class)), "partialMappers");
         }
 
         for (JsonFieldHolder jsonFieldHolder : mJsonObjectHolder.fieldMap.values()) {
@@ -144,7 +144,7 @@ public class ObjectMapperInjector {
                 final String jsonMapperVariableName = getJsonMapperVariableNameForTypeParameter(((ParameterizedTypeField) jsonFieldHolder.type).getParameterName());
 
                 if (!createdJsonMappers.contains(jsonMapperVariableName)) {
-                    ParameterizedTypeName parameterizedType = ParameterizedTypeName.get(ClassName.get(JsonMapper.class), jsonFieldHolder.type.getTypeName());
+                    ParameterizedTypeName parameterizedType = ParameterizedTypeName.get(ClassName.get(FlatBufferMapper.class), jsonFieldHolder.type.getTypeName());
 
                     createdJsonMappers.add(jsonMapperVariableName);
                     builder.addField(FieldSpec.builder(parameterizedType, jsonMapperVariableName)
@@ -156,7 +156,7 @@ public class ObjectMapperInjector {
 
                     if (mJsonObjectHolder.typeParameters.size() > 0) {
                         constructorBuilder.beginControlFlow("if ($L.equals(type))", typeName);
-                        constructorBuilder.addStatement("$L = ($T)this", jsonMapperVariableName, JsonMapper.class);
+                        constructorBuilder.addStatement("$L = ($T)this", jsonMapperVariableName, FlatBufferMapper.class);
                         constructorBuilder.nextControlFlow("else");
                         constructorBuilder.addStatement("$L = $T.mapperFor($L, partialMappers)", jsonMapperVariableName, FlatBuffersX.class, typeName);
                         constructorBuilder.endControlFlow();
@@ -550,7 +550,7 @@ public class ObjectMapperInjector {
         }
 
         for (ClassNameObjectMapper usedJsonObjectMapper : usedJsonObjectMappers) {
-            builder.addField(FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), usedJsonObjectMapper.className), getMapperVariableName(usedJsonObjectMapper.objectMapper))
+            builder.addField(FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(FlatBufferMapper.class), usedJsonObjectMapper.className), getMapperVariableName(usedJsonObjectMapper.objectMapper))
                     .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                     .initializer("$T.mapperFor($T.class)", FlatBuffersX.class, usedJsonObjectMapper.className)
                     .build()
@@ -567,14 +567,14 @@ public class ObjectMapperInjector {
 
         for (TypeName usedTypeConverter : usedTypeConverters) {
             final String variableName = getTypeConverterVariableName(usedTypeConverter);
-            builder.addField(FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), usedTypeConverter), variableName)
+            builder.addField(FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(FlatBufferMapper.class), usedTypeConverter), variableName)
                     .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
                     .build()
             );
 
             builder.addMethod(MethodSpec.methodBuilder(getTypeConverterGetter(usedTypeConverter))
                     .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                    .returns(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), usedTypeConverter))
+                    .returns(ParameterizedTypeName.get(ClassName.get(FlatBufferMapper.class), usedTypeConverter))
                     .beginControlFlow("if ($L == null)", variableName)
                     .addStatement("$L = $T.mapperFor($T.class)", variableName, FlatBuffersX.class, usedTypeConverter)
                     .endControlFlow()

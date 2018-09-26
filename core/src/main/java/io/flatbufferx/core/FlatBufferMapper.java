@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The class that handles all parsing and serialization of @JsonObject's
+ * The class that handles all parsing and serialization of @FlatBufferSrc
  */
-public abstract class JsonMapper<T> {
+public abstract class FlatBufferMapper<T> {
     /**
      * bean to flatbuffer
      *

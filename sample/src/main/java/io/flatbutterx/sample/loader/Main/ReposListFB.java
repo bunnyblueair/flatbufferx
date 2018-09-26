@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.google.flatbuffers.FlatBufferBuilder;
 import io.flatbufferx.core.FlatBuffersX;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 import io.flatbufferx.core.typeconverters.TypeConverter;
 import io.flatbutterx.sample.ReposList;
 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unsafe,unchecked")
-public final class ReposListFB extends JsonMapper<ReposListFB> {
+public final class ReposListFB extends FlatBufferMapper<ReposListFB> {
     private static TypeConverter<RepoFB> io_flatbutterx_sample_Repo_type_converter;
 
     @Override

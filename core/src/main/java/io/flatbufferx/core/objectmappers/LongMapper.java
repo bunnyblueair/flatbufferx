@@ -3,14 +3,14 @@ package io.flatbufferx.core.objectmappers;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 
 /**
  * Built-in mapper for Long objects
  */
-public class LongMapper extends JsonMapper<Long> {
+public class LongMapper extends FlatBufferMapper<Long> {
 
     @Override
     public Long parse(JsonParser jsonParser) throws IOException {

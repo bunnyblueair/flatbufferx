@@ -2,14 +2,14 @@ package io.flatbufferx.core.objectmappers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 
 /**
  * Built-in mapper for String objects
  */
-public class StringMapper extends JsonMapper<String> {
+public class StringMapper extends FlatBufferMapper<String> {
 
     @Override
     public String parse(JsonParser jsonParser) throws IOException {
