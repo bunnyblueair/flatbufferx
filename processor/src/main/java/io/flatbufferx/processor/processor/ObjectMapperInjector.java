@@ -449,7 +449,7 @@ public class ObjectMapperInjector {
 //                repoFB.flatBufferToBean(reposList.repos(i));
 //                repos.add(i, repoFB);
                 //    FieldType fieldType = FieldType.fieldTypeFor(fieldHolder.receiverType.getTypeName().toString() );
-                builder.addStatement("$T obj=new $T()", fieldHolder.receiverType.getTypeName(), fieldHolder.receiverType.getTypeName());
+                builder.addStatement("$T obj=new $T()", fieldHolder.returnsType.getTypeName(), fieldHolder.returnsType.getTypeName());
                 builder.addStatement("obj.flatBufferToBean(flatObj.$N(i))",methodName);
                 builder.addStatement("$N.add(obj)",methodName);
                 builder.endControlFlow();

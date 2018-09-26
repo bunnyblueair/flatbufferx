@@ -28,9 +28,18 @@ public class AutoTester {
         owner.login = "login";
         repoFB.owner = owner;
         reposListFB.repos.add(repoFB);
+        ByteBuffer byteBuffer = null;
         try {
-            ByteBuffer byteBuffer = reposListFB.toFlatBuffer(reposListFB);
+            byteBuffer = reposListFB.toFlatBuffer(reposListFB);
             System.err.println(new String(byteBuffer.array()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ReposList reposList = ReposList.getRootAsReposList(byteBuffer);
+        System.out.println(reposList.reposLength());
+        ReposListFB reposListFB1 = new ReposListFB();
+        try {
+            reposListFB1.flatBufferToBean(reposList);
         } catch (IOException e) {
             e.printStackTrace();
         }
