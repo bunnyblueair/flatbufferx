@@ -90,27 +90,6 @@ public abstract class FlatBufferMapper<T> {
         return parse(jsonParser);
     }
 
-    /**
-     * Parse an object from a byte array. Note: parsing from an InputStream should be preferred over parsing from a byte array if possible.
-     *
-     * @param byteArray The byte array being parsed.
-     */
-    public T parse(byte[] byteArray) throws IOException {
-        JsonParser jsonParser = FlatBuffersX.JSON_FACTORY.createParser(byteArray);
-        jsonParser.nextToken();
-        return parse(jsonParser);
-    }
-
-    /**
-     * Parse an object from a char array. Note: parsing from an InputStream should be preferred over parsing from a char array if possible.
-     *
-     * @param charArray The char array being parsed.
-     */
-    public T parse(char[] charArray) throws IOException {
-        JsonParser jsonParser = FlatBuffersX.JSON_FACTORY.createParser(charArray);
-        jsonParser.nextToken();
-        return parse(jsonParser);
-    }
 
     /**
      * Parse an object from a String. Note: parsing from an InputStream should be preferred over parsing from a String if possible.
@@ -128,7 +107,7 @@ public abstract class FlatBufferMapper<T> {
      *
      * @param is The inputStream, most likely from your networking library.
      */
-    public List<T> parseList(InputStream is) throws IOException {
+    private List<T> parseList(InputStream is) throws IOException {
         JsonParser jsonParser = FlatBuffersX.JSON_FACTORY.createParser(is);
         jsonParser.nextToken();
         return parseList(jsonParser);
@@ -139,22 +118,12 @@ public abstract class FlatBufferMapper<T> {
      *
      * @param byteArray The inputStream, most likely from your networking library.
      */
-    public List<T> parseList(byte[] byteArray) throws IOException {
+    private List<T> parseList(byte[] byteArray) throws IOException {
         JsonParser jsonParser = FlatBuffersX.JSON_FACTORY.createParser(byteArray);
         jsonParser.nextToken();
         return parseList(jsonParser);
     }
 
-    /**
-     * Parse a list of objects from a char array. Note: parsing from an InputStream should be preferred over parsing from a char array if possible.
-     *
-     * @param charArray The char array, most likely from your networking library.
-     */
-    public List<T> parseList(char[] charArray) throws IOException {
-        JsonParser jsonParser = FlatBuffersX.JSON_FACTORY.createParser(charArray);
-        jsonParser.nextToken();
-        return parseList(jsonParser);
-    }
 
     /**
      * Parse a list of objects from a String. Note: parsing from an InputStream should be preferred over parsing from a String if possible.
@@ -183,39 +152,6 @@ public abstract class FlatBufferMapper<T> {
     }
 
     /**
-     * Parse a map of objects from an InputStream.
-     *
-     * @param is The inputStream, most likely from your networking library.
-     */
-    public Map<String, T> parseMap(InputStream is) throws IOException {
-        JsonParser jsonParser = FlatBuffersX.JSON_FACTORY.createParser(is);
-        jsonParser.nextToken();
-        return parseMap(jsonParser);
-    }
-
-    /**
-     * Parse a map of objects from a byte array. Note: parsing from an InputStream should be preferred over parsing from a byte array if possible.
-     *
-     * @param byteArray The byte array string being parsed.
-     */
-    public Map<String, T> parseMap(byte[] byteArray) throws IOException {
-        JsonParser jsonParser = FlatBuffersX.JSON_FACTORY.createParser(byteArray);
-        jsonParser.nextToken();
-        return parseMap(jsonParser);
-    }
-
-    /**
-     * Parse a map of objects from a char array. Note: parsing from an InputStream should be preferred over parsing from a char array if possible.
-     *
-     * @param charArray The char array being parsed.
-     */
-    public Map<String, T> parseMap(char[] charArray) throws IOException {
-        JsonParser jsonParser = FlatBuffersX.JSON_FACTORY.createParser(charArray);
-        jsonParser.nextToken();
-        return parseMap(jsonParser);
-    }
-
-    /**
      * Parse a map of objects from a String. Note: parsing from an InputStream should be preferred over parsing from a String if possible.
      *
      * @param jsonString The JSON string being parsed.
@@ -225,7 +161,6 @@ public abstract class FlatBufferMapper<T> {
         jsonParser.nextToken();
         return parseMap(jsonParser);
     }
-
     /**
      * Parse a map of objects from a JsonParser.
      *
@@ -244,6 +179,7 @@ public abstract class FlatBufferMapper<T> {
         }
         return map;
     }
+
 
     /**
      * Serialize an object to a JSON String.
@@ -313,18 +249,6 @@ public abstract class FlatBufferMapper<T> {
         jsonGenerator.writeEndArray();
     }
 
-    /**
-     * Serialize a list of objects to a JSON String.
-     *
-     * @param map The map of objects to serialize.
-     */
-    public String serialize(Map<String, T> map) throws IOException {
-        StringWriter sw = new StringWriter();
-        JsonGenerator jsonGenerator = FlatBuffersX.JSON_FACTORY.createGenerator(sw);
-        serialize(map, jsonGenerator);
-        jsonGenerator.close();
-        return sw.toString();
-    }
 
     /**
      * Serialize a list of objects to an OutputStream.

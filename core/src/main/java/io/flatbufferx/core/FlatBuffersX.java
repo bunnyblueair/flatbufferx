@@ -30,15 +30,7 @@ public class FlatBuffersX {
     protected static final SimpleArrayMap<Class, TypeConverter> TYPE_CONVERTERS = new SimpleArrayMap<>();
 
     static {
-        try {
-//            JsonMapperLoaderImpl JSON_MAPPER_LOADER;
-//            JSON_MAPPER_LOADER = new JsonMapperLoaderImpl();
-            // JSON_MAPPER_LOADER.putAllJsonMappers(OBJECT_MAPPERS);
-            //   JSON_MAPPER_LOADER.retainAllClassMapper(CLASS_MAPPERS);
-        } catch (Exception e) {
-            e.printStackTrace();
-            //  throw new RuntimeException("JsonMapperLoaderImpl class not found");
-        }
+
         OBJECT_MAPPERS.put(String.class, new StringMapper());
         OBJECT_MAPPERS.put(Integer.class, new IntegerMapper());
         OBJECT_MAPPERS.put(Long.class, new LongMapper());
@@ -113,61 +105,6 @@ public class FlatBuffersX {
         }
     }
 
-    /**
-     * Parse a list of objects from an InputStream.
-     *
-     * @param is              The inputStream, most likely from your networking library.
-     * @param jsonObjectClass The @JsonObject class to parse the InputStream into
-     */
-    public static <E> List<E> parseList(InputStream is, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).parseList(is);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Parse a list of objects from a String. Note: parsing from an InputStream should be preferred over parsing from a String if possible.
-     *
-     * @param jsonString      The JSON string being parsed.
-     * @param jsonObjectClass The @JsonObject class to parse the InputStream into
-     */
-    public static <E> List<E> parseList(String jsonString, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).parseList(jsonString);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Parse a map of objects from an InputStream.
-     *
-     * @param is              The inputStream, most likely from your networking library.
-     * @param jsonObjectClass The @JsonObject class to parse the InputStream into
-     */
-    public static <E> Map<String, E> parseMap(InputStream is, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).parseMap(is);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Parse a map of objects from a String. Note: parsing from an InputStream should be preferred over parsing from a String if possible.
-     *
-     * @param jsonString      The JSON string being parsed.
-     * @param jsonObjectClass The @JsonObject class to parse the InputStream into
-     */
-    public static <E> Map<String, E> parseMap(String jsonString, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).parseMap(jsonString);
-        } catch (IOException e) {
-            return null;
-        }
-    }
 
     /**
      * Serialize an object to a JSON String.
@@ -262,19 +199,6 @@ public class FlatBuffersX {
         }
     }
 
-    /**
-     * Serialize a map of objects to a JSON String.
-     *
-     * @param map             The map of objects to serialize.
-     * @param jsonObjectClass The @JsonObject class of the list elements
-     */
-    public static <E> String serialize(Map<String, E> map, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).serialize(map);
-        } catch (IOException e) {
-            return null;
-        }
-    }
 
     /**
      * Serialize a map of objects to an OutputStream.

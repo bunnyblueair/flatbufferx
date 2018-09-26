@@ -125,9 +125,9 @@ public class FlatBuffersInjector {
                 .addStatement("map.put($T.class, $L)", Boolean.class, getMapperVariableName(BooleanMapper.class))
                 .addStatement("map.put($T.class, $L)", Object.class, getMapperVariableName(ObjectMapper.class))
                 .addStatement("map.put($T.class, $L)", List.class, getMapperVariableName(ListMapper.class))
-                .addStatement("map.put($T.class, $L)", ArrayList.class, getMapperVariableName(ListMapper.class))
-                .addStatement("map.put($T.class, $L)", Map.class, getMapperVariableName(MapMapper.class))
-                .addStatement("map.put($T.class, $L)", HashMap.class, getMapperVariableName(MapMapper.class));
+                .addStatement("map.put($T.class, $L)", ArrayList.class, getMapperVariableName(ListMapper.class));
+//                .addStatement("map.put($T.class, $L)", Map.class, getMapperVariableName(MapMapper.class))
+//                .addStatement("map.put($T.class, $L)", HashMap.class, getMapperVariableName(MapMapper.class));
 
         List<String> createdMappers = new ArrayList<>();
         for (JsonObjectHolder jsonObjectHolder : mJsonObjectHolders) {
