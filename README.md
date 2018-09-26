@@ -26,7 +26,7 @@ flatc version >=1.9.0
 
 ```java
 
-public final class UserFB extends JsonMapper<UserFB> {
+public final class UserFB extends FlatBufferMapper<UserFB> {
   public Long id;
 
   public String login;
@@ -92,3 +92,17 @@ public final class UserFB extends JsonMapper<UserFB> {
   - append java bean to  flatbuffers,you should not call it directly
 - toFlatBuffer
   - convert java bean to flatbuffer for data exchange
+  
+  # performance
+  
+  |  | FlatBuffers (binary) | Protocol Buffers LITE | Rapid JSON | FlatBuffers (JSON) | pugixml | Raw structs |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | Decode + Traverse + Dealloc (1 million times, seconds) | 0.08 | 302 | 583 | 105 | 196 | 0.02 |
+  | Decode / Traverse / Dealloc (breakdown) | 0 / 0.08 / 0 | 220 / 0.15 / 81 | 294 / 0.9 / 287 | 70 / 0.08 / 35 | 41 / 3.9 / 150 | 0 / 0.02 / 0 |
+  | Encode (1 million times, seconds) | 3.2 | 185 | 650 | 169 | 273 | 0.15 |
+  | Wire format size (normal / zlib, bytes) | 344 / 220 | 228 / 174 | 1475 / 322 | 1029 / 298 | 1137 / 341 | 312 / 187 |
+  | Memory needed to store decoded wire (bytes / blocks) | 0 / 0 | 760 / 20 | 65689 / 4 | 328 / 1 | 34194 / 3 | 0 / 0 |
+  | Transient memory allocated during decode (KB) | 0 | 1 | 131 | 4 | 34 | 0 |
+  | Generated source code size (KB) | 4 | 61 | 0 | 4 | 0 | 0 |
+  | Field access in handwritten traversal code | typed accessors | typed accessors | manual error checking | typed accessors | manual error checking | typed but no safety |
+  | Library source code (KB) | 15 | some subset of 3800 | 87 | 43 | 327 | 0 |
