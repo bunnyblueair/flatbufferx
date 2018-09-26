@@ -1,4 +1,4 @@
-namespace io.flatbutterx.sample;
+namespace io.flatbufferx.sample;
 
 table ReposList2 {
     repos : [Repo2];

@@ -44,18 +44,7 @@ public class DynamicFieldType extends FieldType {
         if (!mTypeName.isPrimitive() && checkIfNull) {
             builder.beginControlFlow("if ($L != null)", getter);
         }
-        if (mTypeName.toString().endsWith("FB")) {
 
-        } else {
-            //  Thread.dumpStack();
-        }
-        System.err.println("xxxx+++=" + ObjectMapperInjector.getTypeConverterGetter(ClassName.bestGuess(mTypeName.toString().toString())));
-//        Type parameterTypeRaw=mTypeName;
-//        if (mTypeName instanceof DynamicFieldType){
-//            mTypeName= FieldType.fieldTypeFor(parameterType.getTypeName().toString()+ Constants.FLATBUFFER_INJECT_SUFFIX);
-//            // ClassName.bestGuess(parameterType.getTypeName().toString()+ Constants.FLATBUFFER_INJECT_SUFFIX);
-//        }
-//fixed
         builder.addStatement(ObjectMapperInjector.getTypeConverterGetter(ClassName.bestGuess(mTypeName.toString())) + "().serialize($L, $S, $L, $L)", getter, isObjectProperty ? fieldName : null, isObjectProperty, JSON_GENERATOR_VARIABLE_NAME);
         if (!mTypeName.isPrimitive() && checkIfNull) {
             if (writeIfNull) {
