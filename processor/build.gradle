@@ -15,10 +15,10 @@ buildscript {
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 ext.artifactId = 'flatbufferx-compiler'
-
+group = 'io.flatbufferx'
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.7'
-    compile 'com.squareup:javapoet:1.8.0'
+    compile 'com.squareup:javapoet:1.11.1'
     compile project(':core')
  //   compileOnly group: 'com.sun', name: 'tools', version: '1.7.0.13'
 

@@ -1,16 +1,16 @@
 package io.flatbufferx.core.objectmappers;
 
-import io.flatbufferx.core.JsonMapper;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 
 /**
  * Built-in mapper for Float objects
  */
-public class FloatMapper extends JsonMapper<Float> {
+public class FloatMapper extends FlatBufferMapper<Float> {
 
     @Override
     public Float parse(JsonParser jsonParser) throws IOException {
@@ -22,7 +22,8 @@ public class FloatMapper extends JsonMapper<Float> {
     }
 
     @Override
-    public void parseField(Float instance, String fieldName, JsonParser jsonParser) throws IOException { }
+    public void parseField(Float instance, String fieldName, JsonParser jsonParser) throws IOException {
+    }
 
     @Override
     public void serialize(Float object, JsonGenerator generator, boolean writeStartAndEnd) throws IOException {

@@ -1,10 +1,9 @@
 package io.flatbufferx.core.objectmappers;
 
-import io.flatbufferx.core.FlatBuffersX;
-import io.flatbufferx.core.JsonMapper;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import io.flatbufferx.core.FlatBuffersX;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.Map;
 /**
  * Built-in mapper for unknown types
  */
-public class ObjectMapper extends JsonMapper<Object> {
+public class ObjectMapper extends FlatBufferMapper<Object> {
 
     @Override
     public Object parse(JsonParser jsonParser) throws IOException {
@@ -42,31 +41,32 @@ public class ObjectMapper extends JsonMapper<Object> {
     }
 
     @Override
-    public void parseField(Object instance, String fieldName, JsonParser jsonParser) throws IOException { }
+    public void parseField(Object instance, String fieldName, JsonParser jsonParser) throws IOException {
+    }
 
     @Override
     public void serialize(Object value, JsonGenerator generator, boolean writeStartAndEnd) throws IOException {
         if (value == null) {
             generator.writeNull();
         } else if (value instanceof String) {
-            generator.writeString((String)value);
+            generator.writeString((String) value);
         } else if (value instanceof Integer) {
-            generator.writeNumber((Integer)value);
+            generator.writeNumber((Integer) value);
         } else if (value instanceof Long) {
-            generator.writeNumber((Long)value);
+            generator.writeNumber((Long) value);
         } else if (value instanceof Float) {
-            generator.writeNumber((Float)value);
+            generator.writeNumber((Float) value);
         } else if (value instanceof Double) {
-            generator.writeNumber((Double)value);
+            generator.writeNumber((Double) value);
         } else if (value instanceof Boolean) {
-            generator.writeBoolean((Boolean)value);
+            generator.writeBoolean((Boolean) value);
         } else if (value instanceof List) {
-            FlatBuffersX.mapperFor(List.class).serialize((List<Object>)value, generator, writeStartAndEnd);
+            FlatBuffersX.mapperFor(List.class).serialize((List<Object>) value, generator, writeStartAndEnd);
         } else if (value instanceof Map) {
-            FlatBuffersX.mapperFor(Map.class).serialize((Map<String, Object>)value, generator, writeStartAndEnd);
+            FlatBuffersX.mapperFor(Map.class).serialize((Map<String, Object>) value, generator, writeStartAndEnd);
         } else {
             Class valueClass = value.getClass();
-            JsonMapper jsonMapper = FlatBuffersX.mapperFor(valueClass);
+            FlatBufferMapper jsonMapper = FlatBuffersX.mapperFor(valueClass);
 
             if (jsonMapper != null) {
                 if (writeStartAndEnd) {

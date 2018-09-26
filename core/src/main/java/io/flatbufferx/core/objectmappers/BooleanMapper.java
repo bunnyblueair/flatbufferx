@@ -1,16 +1,16 @@
 package io.flatbufferx.core.objectmappers;
 
-import io.flatbufferx.core.JsonMapper;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 
 /**
  * Built-in mapper for Boolean objects
  */
-public class BooleanMapper extends JsonMapper<Boolean> {
+public class BooleanMapper extends FlatBufferMapper<Boolean> {
 
     @Override
     public Boolean parse(JsonParser jsonParser) throws IOException {
@@ -22,7 +22,8 @@ public class BooleanMapper extends JsonMapper<Boolean> {
     }
 
     @Override
-    public void parseField(Boolean instance, String fieldName, JsonParser jsonParser) throws IOException { }
+    public void parseField(Boolean instance, String fieldName, JsonParser jsonParser) throws IOException {
+    }
 
     @Override
     public void serialize(Boolean object, JsonGenerator generator, boolean writeStartAndEnd) throws IOException {

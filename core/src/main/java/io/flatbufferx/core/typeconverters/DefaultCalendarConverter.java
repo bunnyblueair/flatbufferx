@@ -2,7 +2,9 @@ package io.flatbufferx.core.typeconverters;
 
 import java.text.DateFormat;
 
-/** The default CalendarTypeConverter implementation. Attempts to parse ISO8601-formatted dates. */
+/**
+ * The default CalendarTypeConverter implementation. Attempts to parse ISO8601-formatted dates.
+ */
 public class DefaultCalendarConverter extends CalendarTypeConverter {
 
     private DateFormat mDateFormat;

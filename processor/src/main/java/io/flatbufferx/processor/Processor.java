@@ -21,9 +21,6 @@ public abstract class Processor {
         mProcessingEnv = processingEnv;
     }
 
-    public abstract Class getAnnotation();
-    public abstract void findAndParseObjects(RoundEnvironment env, Map<String, JsonObjectHolder> jsonObjectMap, Elements elements, Types types);
-
     public static List<Processor> allProcessors(ProcessingEnvironment processingEnvironment) {
         List<Processor> list = new ArrayList<>();
         list.add(new FlatBufferSrcProcessor(processingEnvironment));
@@ -32,6 +29,10 @@ public abstract class Processor {
 //        list.add(new JsonFieldProcessor(processingEnvironment));
         return list;
     }
+
+    public abstract Class getAnnotation();
+
+    public abstract void findAndParseObjects(RoundEnvironment env, Map<String, JsonObjectHolder> jsonObjectMap, Elements elements, Types types);
 
     public void error(Element element, String message, Object... args) {
         mProcessingEnv.getMessager().printMessage(ERROR, String.format(message, args), element);

@@ -1,9 +1,9 @@
 package io.flatbufferx.processor.type.field;
 
-import io.flatbufferx.processor.processor.ObjectMapperInjector;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeName;
+import io.flatbufferx.processor.processor.ObjectMapperInjector;
 
 import java.util.List;
 
@@ -31,6 +31,7 @@ public class TypeConverterFieldType extends FieldType {
     }
 
     public ClassName getTypeConverterClassName() {
+
         return mTypeConverter;
     }
 

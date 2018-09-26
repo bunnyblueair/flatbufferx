@@ -1,32 +1,16 @@
 package io.flatbufferx.processor.type.field;
 
-import com.sun.tools.javac.code.Symbol;
-import io.flatbufferx.core.annotation.JsonObject;
-import io.flatbufferx.processor.type.Type;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+import com.sun.tools.javac.code.Symbol;
+import io.flatbufferx.processor.type.Type;
 
-import java.lang.annotation.Annotation;
-
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 public abstract class FieldType extends Type {
-
-    public abstract TypeName getNonPrimitiveTypeName();
-
-    @Override
-    public String getParameterizedTypeString() {
-        return "$T";
-    }
-
-    @Override
-    public Object[] getParameterizedTypeStringArgs() {
-        return new Object[] { getNonPrimitiveTypeName() };
-    }
 
     public static FieldType fieldTypeFor(TypeMirror typeMirror, TypeMirror typeConverterType, Elements elements, Types types) {
         if (typeMirror != null) {
@@ -60,38 +44,36 @@ public abstract class FieldType extends Type {
                 return new StringFieldType();
             } else if (Object.class.getCanonicalName().equals(typeMirror.toString())) {
                 return new UnknownFieldType();
-            } else if (typeMirror instanceof DeclaredType) {
-                Annotation annotation = ((DeclaredType) typeMirror).asElement().getAnnotation(JsonObject.class);
-                if (annotation != null) {
-                    return new JsonFieldType(ClassName.bestGuess(typeMirror.toString()));
-                }
             }
+
 
             return new DynamicFieldType(TypeName.get(typeMirror));
         } else {
             return null;
         }
     }
-    public static FieldType fieldTypeForMethod( Elements elements, Types types, Symbol.MethodSymbol enclosedElement) {
-      String type=  enclosedElement.getReturnType().toString();
 
-           if (Boolean.class.getCanonicalName().equals(type)||boolean.class.getCanonicalName().equals(type)) {
-                return new BooleanFieldType(false);
-            }  if (Byte.class.getCanonicalName().equals(type)) {
-                return new ByteFieldType(false);
-            } else  if (Integer.class.getCanonicalName().equals(type)||int.class.getCanonicalName().equals(type)) {
-                return new IntegerFieldType(false);
-            } else  if (Long.class.getCanonicalName().equals(type) ||long.class.getCanonicalName().equals(type)){
-                return new LongFieldType(false);
-            } else if (Float.class.getCanonicalName().equals(type)) {
-                return new FloatFieldType(false);
-            } else if (Double.class.getCanonicalName().equals(type)) {
-                return new DoubleFieldType(false);
-            } else if (String.class.getCanonicalName().equals(type)) {
-                return new StringFieldType();
-            } else if (Object.class.getCanonicalName().equals(type)) {
-                return new UnknownFieldType();
-            }
+    public static FieldType fieldTypeForMethod(Elements elements, Types types, Symbol.MethodSymbol enclosedElement) {
+        String type = enclosedElement.getReturnType().toString();
+
+        if (Boolean.class.getCanonicalName().equals(type) || boolean.class.getCanonicalName().equals(type)) {
+            return new BooleanFieldType(false);
+        }
+        if (Byte.class.getCanonicalName().equals(type)) {
+            return new ByteFieldType(false);
+        } else if (Integer.class.getCanonicalName().equals(type) || int.class.getCanonicalName().equals(type)) {
+            return new IntegerFieldType(false);
+        } else if (Long.class.getCanonicalName().equals(type) || long.class.getCanonicalName().equals(type)) {
+            return new LongFieldType(false);
+        } else if (Float.class.getCanonicalName().equals(type)) {
+            return new FloatFieldType(false);
+        } else if (Double.class.getCanonicalName().equals(type)) {
+            return new DoubleFieldType(false);
+        } else if (String.class.getCanonicalName().equals(type)) {
+            return new StringFieldType();
+        } else if (Object.class.getCanonicalName().equals(type)) {
+            return new UnknownFieldType();
+        }
 //            else if (typeMirror instanceof DeclaredType) {
 //                Annotation annotation = ((DeclaredType) typeMirror).asElement().getAnnotation(JsonObject.class);
 //                if (annotation != null) {
@@ -99,13 +81,13 @@ public abstract class FieldType extends Type {
 //                }
 //            }
 
-            return new DynamicFieldType(TypeName.get(enclosedElement.getReturnType()));
+        return new DynamicFieldType(TypeName.get(enclosedElement.getReturnType()));
 
     }
 
-    public static FieldType fieldTypeFor(String  typeMirror) {
+    public static FieldType fieldTypeFor(String typeMirror) {
         if (typeMirror != null) {
-         if (typeMirror.equals(Boolean.class.getCanonicalName())) {
+            if (typeMirror.equals(Boolean.class.getCanonicalName())) {
                 return new BooleanFieldType(true);
             } else if (Boolean.class.getCanonicalName().equals(typeMirror)) {
                 return new BooleanFieldType(false);
@@ -146,6 +128,7 @@ public abstract class FieldType extends Type {
             return null;
         }
     }
+
     protected static String replaceLastLiteral(String string, String replacement) {
         int pos = string.lastIndexOf("$L");
         if (pos > -1) {
@@ -155,5 +138,17 @@ public abstract class FieldType extends Type {
         } else {
             return string;
         }
+    }
+
+    public abstract TypeName getNonPrimitiveTypeName();
+
+    @Override
+    public String getParameterizedTypeString() {
+        return "$T";
+    }
+
+    @Override
+    public Object[] getParameterizedTypeStringArgs() {
+        return new Object[]{getNonPrimitiveTypeName()};
     }
 }

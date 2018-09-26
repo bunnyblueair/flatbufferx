@@ -1,8 +1,8 @@
 package io.flatbufferx.processor.type.field;
 
-import io.flatbufferx.processor.type.Type;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeName;
+import io.flatbufferx.processor.type.Type;
 
 import java.util.ArrayList;
 import java.util.List;

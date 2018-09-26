@@ -1,19 +1,9 @@
 package io.flatbufferx.processor;
 
+import io.flatbufferx.core.Constants;
 import io.flatbufferx.processor.processor.FlatBuffersInjector;
 import io.flatbufferx.processor.processor.JsonObjectHolder;
 import io.flatbufferx.processor.processor.ObjectMapperInjector;
-import io.flatbufferx.core.Constants;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -24,6 +14,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.*;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
 
@@ -34,6 +29,7 @@ public class FlatBufferAnnotationProcessor extends AbstractProcessor {
     private List<Processor> mProcessors;
     private Map<String, JsonObjectHolder> mJsonObjectMap;
     private boolean mLoaderWritten;
+
     @Override
     public synchronized void init(ProcessingEnvironment env) {
         super.init(env);
@@ -105,7 +101,7 @@ public class FlatBufferAnnotationProcessor extends AbstractProcessor {
         } catch (Throwable e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
-            error("Exception while processing Json classes. Stack trace incoming:\n%s", stackTrace.toString());
+            error("Exception while processing flatbuffers classes. Stack trace incoming:\n%s", stackTrace.toString());
             return false;
         }
     }

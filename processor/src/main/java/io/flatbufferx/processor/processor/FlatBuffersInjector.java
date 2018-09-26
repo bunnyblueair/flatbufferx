@@ -1,37 +1,16 @@
 package io.flatbufferx.processor.processor;
 
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.lang.model.element.Modifier;
-
+import com.squareup.javapoet.*;
 import io.flatbufferx.core.Constants;
-import io.flatbufferx.core.JsonMapper;
+import io.flatbufferx.core.FlatBufferMapper;
 import io.flatbufferx.core.JsonMapperLoader;
 import io.flatbufferx.core.ParameterizedType;
-import io.flatbufferx.core.objectmappers.BooleanMapper;
-import io.flatbufferx.core.objectmappers.DoubleMapper;
-import io.flatbufferx.core.objectmappers.FloatMapper;
-import io.flatbufferx.core.objectmappers.IntegerMapper;
-import io.flatbufferx.core.objectmappers.ListMapper;
-import io.flatbufferx.core.objectmappers.LongMapper;
-import io.flatbufferx.core.objectmappers.MapMapper;
-import io.flatbufferx.core.objectmappers.ObjectMapper;
-import io.flatbufferx.core.objectmappers.StringMapper;
+import io.flatbufferx.core.objectmappers.*;
 import io.flatbufferx.core.util.SimpleArrayMap;
+
+import javax.lang.model.element.Modifier;
+import java.util.*;
 
 public class FlatBuffersInjector {
 
@@ -39,6 +18,14 @@ public class FlatBuffersInjector {
 
     public FlatBuffersInjector(Collection<JsonObjectHolder> jsonObjectHolders) {
         mJsonObjectHolders = jsonObjectHolders;
+    }
+
+    public static String getMapperVariableName(Class cls) {
+        return getMapperVariableName(cls.getCanonicalName());
+    }
+
+    public static String getMapperVariableName(String fullyQualifiedClassName) {
+        return fullyQualifiedClassName.replaceAll("\\.", "_").replaceAll("\\$", "_").toUpperCase();
     }
 
     public String getJavaClassFile() {
@@ -54,7 +41,7 @@ public class FlatBuffersInjector {
         TypeSpec.Builder builder = TypeSpec.classBuilder(Constants.LOADER_CLASS_NAME).addModifiers(Modifier.PUBLIC, Modifier.FINAL);
         builder.addSuperinterface(ClassName.get(JsonMapperLoader.class));
 
-   //     addAllBuiltInMappers(builder);
+        //     addAllBuiltInMappers(builder);
         builder.addMethod(getPutAllJsonMappersMethodEmpty(builder));
 
         addParameterizedMapperGetters(builder);
@@ -85,9 +72,9 @@ public class FlatBuffersInjector {
     }
 
     private void addDefaultSize(TypeSpec.Builder typeSpecBuilder) {
-        typeSpecBuilder.addField(FieldSpec.builder(int.class,"DEFAULT_MAP_SIZE")
+        typeSpecBuilder.addField(FieldSpec.builder(int.class, "DEFAULT_MAP_SIZE")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer(mJsonObjectHolders.size()+"")
+                .initializer(mJsonObjectHolders.size() + "")
                 .build()
         );
     }
@@ -96,8 +83,7 @@ public class FlatBuffersInjector {
         MethodSpec.Builder builder = MethodSpec.methodBuilder("putAllJsonMappers")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterizedTypeName.get(ClassName.get(SimpleArrayMap.class), ClassName.get(Class.class), ClassName.get(JsonMapper.class)), "map")
-               ;
+                .addParameter(ParameterizedTypeName.get(ClassName.get(SimpleArrayMap.class), ClassName.get(Class.class), ClassName.get(FlatBufferMapper.class)), "map");
 
 //        List<String> createdMappers = new ArrayList<>();
 //        for (JsonObjectHolder jsonObjectHolder : mJsonObjectHolders) {
@@ -125,11 +111,12 @@ public class FlatBuffersInjector {
 
         return builder.build();
     }
+
     private MethodSpec getPutAllJsonMappersMethod(TypeSpec.Builder typeSpecBuilder) {
         MethodSpec.Builder builder = MethodSpec.methodBuilder("putAllJsonMappers")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterizedTypeName.get(ClassName.get(SimpleArrayMap.class), ClassName.get(Class.class), ClassName.get(JsonMapper.class)), "map")
+                .addParameter(ParameterizedTypeName.get(ClassName.get(SimpleArrayMap.class), ClassName.get(Class.class), ClassName.get(FlatBufferMapper.class)), "map")
                 .addStatement("map.put($T.class, $L)", String.class, getMapperVariableName(StringMapper.class))
                 .addStatement("map.put($T.class, $L)", Integer.class, getMapperVariableName(IntegerMapper.class))
                 .addStatement("map.put($T.class, $L)", Long.class, getMapperVariableName(LongMapper.class))
@@ -138,9 +125,9 @@ public class FlatBuffersInjector {
                 .addStatement("map.put($T.class, $L)", Boolean.class, getMapperVariableName(BooleanMapper.class))
                 .addStatement("map.put($T.class, $L)", Object.class, getMapperVariableName(ObjectMapper.class))
                 .addStatement("map.put($T.class, $L)", List.class, getMapperVariableName(ListMapper.class))
-                .addStatement("map.put($T.class, $L)", ArrayList.class, getMapperVariableName(ListMapper.class))
-                .addStatement("map.put($T.class, $L)", Map.class, getMapperVariableName(MapMapper.class))
-                .addStatement("map.put($T.class, $L)", HashMap.class, getMapperVariableName(MapMapper.class));
+                .addStatement("map.put($T.class, $L)", ArrayList.class, getMapperVariableName(ListMapper.class));
+//                .addStatement("map.put($T.class, $L)", Map.class, getMapperVariableName(MapMapper.class))
+//                .addStatement("map.put($T.class, $L)", HashMap.class, getMapperVariableName(MapMapper.class));
 
         List<String> createdMappers = new ArrayList<>();
         for (JsonObjectHolder jsonObjectHolder : mJsonObjectHolders) {
@@ -168,6 +155,7 @@ public class FlatBuffersInjector {
 
         return builder.build();
     }
+
     private MethodSpec getPutAllJsoClassMappersMethod(TypeSpec.Builder typeSpecBuilder) {
         MethodSpec.Builder builder = MethodSpec.methodBuilder("retainAllClassMapper")
                 .addAnnotation(Override.class)
@@ -185,7 +173,7 @@ public class FlatBuffersInjector {
 //                .addStatement("map.put($T.class, $L)", Map.class, getMapperVariableName(MapMapper.class))
 //                .addStatement("map.put($T.class, $L)", HashMap.class, getMapperVariableName(MapMapper.class));
 
-      //  List<String> createdMappers = new ArrayList<>();
+        //  List<String> createdMappers = new ArrayList<>();
         for (JsonObjectHolder jsonObjectHolder : mJsonObjectHolders) {
             if (jsonObjectHolder.typeParameters.size() == 0) {
                 TypeName mapperTypeName = ClassName.get(jsonObjectHolder.packageName, jsonObjectHolder.injectedClassName);
@@ -211,14 +199,15 @@ public class FlatBuffersInjector {
 
         return builder.build();
     }
+
     private void addParameterizedMapperGetters(TypeSpec.Builder builder) {
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("mapperFor")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addTypeVariable(TypeVariableName.get("T"))
-                .returns(ParameterizedTypeName.get(ClassName.get(JsonMapper.class), TypeVariableName.get("T")))
+                .returns(ParameterizedTypeName.get(ClassName.get(FlatBufferMapper.class), TypeVariableName.get("T")))
                 .addParameter(ParameterizedTypeName.get(ClassName.get(ParameterizedType.class), TypeVariableName.get("T")), "type")
-                .addParameter(ParameterizedTypeName.get(ClassName.get(SimpleArrayMap.class), ClassName.get(ParameterizedType.class), ClassName.get(JsonMapper.class)), "partialMappers");
+                .addParameter(ParameterizedTypeName.get(ClassName.get(SimpleArrayMap.class), ClassName.get(ParameterizedType.class), ClassName.get(FlatBufferMapper.class)), "partialMappers");
 
         boolean conditionalStarted = false;
         for (JsonObjectHolder jsonObjectHolder : mJsonObjectHolders) {
@@ -255,13 +244,5 @@ public class FlatBuffersInjector {
         methodBuilder.addStatement("return null");
 
         builder.addMethod(methodBuilder.build());
-    }
-
-    public static String getMapperVariableName(Class cls) {
-        return getMapperVariableName(cls.getCanonicalName());
-    }
-
-    public static String getMapperVariableName(String fullyQualifiedClassName) {
-        return fullyQualifiedClassName.replaceAll("\\.", "_").replaceAll("\\$", "_").toUpperCase();
     }
 }

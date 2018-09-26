@@ -1,54 +1,36 @@
 package io.flatbufferx.core;
 
 import com.fasterxml.jackson.core.JsonFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-
-import io.flatbufferx.core.objectmappers.BooleanMapper;
-import io.flatbufferx.core.objectmappers.DoubleMapper;
-import io.flatbufferx.core.objectmappers.FloatMapper;
-import io.flatbufferx.core.objectmappers.IntegerMapper;
-import io.flatbufferx.core.objectmappers.ListMapper;
-import io.flatbufferx.core.objectmappers.LongMapper;
-import io.flatbufferx.core.objectmappers.MapMapper;
-import io.flatbufferx.core.objectmappers.ObjectMapper;
-import io.flatbufferx.core.objectmappers.StringMapper;
-import io.flatbufferx.core.simple.SimpleListResponse;
-import io.flatbufferx.core.simple.SimpleListResponseMapper;
+import io.flatbufferx.core.objectmappers.*;
 import io.flatbufferx.core.typeconverters.DefaultCalendarConverter;
 import io.flatbufferx.core.typeconverters.DefaultDateConverter;
 import io.flatbufferx.core.typeconverters.TypeConverter;
 import io.flatbufferx.core.util.SimpleArrayMap;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 public class FlatBuffersX {
 
+    /**
+     * The JsonFactory that should be used throughout the entire app.
+     */
+    public static final JsonFactory JSON_FACTORY = new JsonFactory();
     protected static final ListMapper LIST_MAPPER = new ListMapper();
     protected static final MapMapper MAP_MAPPER = new MapMapper();
-
-    protected static final SimpleArrayMap<Class, JsonMapper> OBJECT_MAPPERS = new SimpleArrayMap<Class, JsonMapper>(32);
+    protected static final SimpleArrayMap<Class, FlatBufferMapper> OBJECT_MAPPERS = new SimpleArrayMap<Class, FlatBufferMapper>(32);
     protected static final SimpleArrayMap<Class, Class> CLASS_MAPPERS = new SimpleArrayMap<Class, Class>(32);
+    protected static final ConcurrentHashMap<ParameterizedType, FlatBufferMapper> PARAMETERIZED_OBJECT_MAPPERS = new ConcurrentHashMap<ParameterizedType, FlatBufferMapper>();
+
+    protected static final SimpleArrayMap<Class, TypeConverter> TYPE_CONVERTERS = new SimpleArrayMap<>();
+
     static {
-        try {
-//            JsonMapperLoaderImpl JSON_MAPPER_LOADER;
-//            JSON_MAPPER_LOADER = new JsonMapperLoaderImpl();
-           // JSON_MAPPER_LOADER.putAllJsonMappers(OBJECT_MAPPERS);
-         //   JSON_MAPPER_LOADER.retainAllClassMapper(CLASS_MAPPERS);
-        } catch (Exception e) {
-            e.printStackTrace();
-       //  throw new RuntimeException("JsonMapperLoaderImpl class not found");
-        }
+
         OBJECT_MAPPERS.put(String.class, new StringMapper());
         OBJECT_MAPPERS.put(Integer.class, new IntegerMapper());
         OBJECT_MAPPERS.put(Long.class, new LongMapper());
@@ -60,24 +42,12 @@ public class FlatBuffersX {
         OBJECT_MAPPERS.put(ArrayList.class, LIST_MAPPER);
         OBJECT_MAPPERS.put(Map.class, MAP_MAPPER);
         OBJECT_MAPPERS.put(HashMap.class, MAP_MAPPER);
-        OBJECT_MAPPERS.put(SimpleListResponse.class, new SimpleListResponseMapper());
     }
-
-    protected static final ConcurrentHashMap<ParameterizedType, JsonMapper> PARAMETERIZED_OBJECT_MAPPERS = new ConcurrentHashMap<ParameterizedType, JsonMapper>();
-
-    protected static final SimpleArrayMap<Class, TypeConverter> TYPE_CONVERTERS = new SimpleArrayMap<>();
 
     static {
         registerTypeConverter(Date.class, new DefaultDateConverter());
         registerTypeConverter(Calendar.class, new DefaultCalendarConverter());
     }
-
-
-
-    /**
-     * The JsonFactory that should be used throughout the entire app.
-     */
-    public static final JsonFactory JSON_FACTORY = new JsonFactory();
 
     /**
      * Parse an object from an InputStream.
@@ -135,61 +105,6 @@ public class FlatBuffersX {
         }
     }
 
-    /**
-     * Parse a list of objects from an InputStream.
-     *
-     * @param is              The inputStream, most likely from your networking library.
-     * @param jsonObjectClass The @JsonObject class to parse the InputStream into
-     */
-    public static <E> List<E> parseList(InputStream is, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).parseList(is);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Parse a list of objects from a String. Note: parsing from an InputStream should be preferred over parsing from a String if possible.
-     *
-     * @param jsonString      The JSON string being parsed.
-     * @param jsonObjectClass The @JsonObject class to parse the InputStream into
-     */
-    public static <E> List<E> parseList(String jsonString, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).parseList(jsonString);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Parse a map of objects from an InputStream.
-     *
-     * @param is              The inputStream, most likely from your networking library.
-     * @param jsonObjectClass The @JsonObject class to parse the InputStream into
-     */
-    public static <E> Map<String, E> parseMap(InputStream is, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).parseMap(is);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Parse a map of objects from a String. Note: parsing from an InputStream should be preferred over parsing from a String if possible.
-     *
-     * @param jsonString      The JSON string being parsed.
-     * @param jsonObjectClass The @JsonObject class to parse the InputStream into
-     */
-    public static <E> Map<String, E> parseMap(String jsonString, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).parseMap(jsonString);
-        } catch (IOException e) {
-            return null;
-        }
-    }
 
     /**
      * Serialize an object to a JSON String.
@@ -201,6 +116,7 @@ public class FlatBuffersX {
         try {
             return mapperFor((Class<E>) object.getClass()).serialize(object);
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -283,19 +199,6 @@ public class FlatBuffersX {
         }
     }
 
-    /**
-     * Serialize a map of objects to a JSON String.
-     *
-     * @param map             The map of objects to serialize.
-     * @param jsonObjectClass The @JsonObject class of the list elements
-     */
-    public static <E> String serialize(Map<String, E> map, Class<E> jsonObjectClass) {
-        try {
-            return mapperFor(jsonObjectClass).serialize(map);
-        } catch (IOException e) {
-            return null;
-        }
-    }
 
     /**
      * Serialize a map of objects to an OutputStream.
@@ -314,18 +217,17 @@ public class FlatBuffersX {
     }
 
     @SuppressWarnings("unchecked")
-    /*package*/ static <E> JsonMapper<E> getMapper(Class<E> cls) {
-        JsonMapper<E> mapper = OBJECT_MAPPERS.get(cls);
+    /*package*/ static <E> FlatBufferMapper<E> getMapper(Class<E> cls) {
+        FlatBufferMapper<E> mapper = OBJECT_MAPPERS.get(cls);
         if (mapper == null) {
-            Class<?> mapperClass= CLASS_MAPPERS.get(cls);
+            Class<?> mapperClass = CLASS_MAPPERS.get(cls);
             // The only way the mapper wouldn't already be loaded into OBJECT_MAPPERS is if it was compiled separately, but let's handle it anyway
             try {
-                if (mapperClass==null)
-                {
+                if (mapperClass == null) {
 
-                  mapperClass = Class.forName(cls.getName() + Constants.FLATBUFFER_INJECT_SUFFIX);
+                    mapperClass = Class.forName(cls.getName() + Constants.FLATBUFFER_INJECT_SUFFIX);
                 }
-                mapper = (JsonMapper<E>) mapperClass.newInstance();
+                mapper = (FlatBufferMapper<E>) mapperClass.newInstance();
                 OBJECT_MAPPERS.put(cls, mapper);
             } catch (Exception ignored) {
             }
@@ -334,13 +236,13 @@ public class FlatBuffersX {
     }
 
     @SuppressWarnings("unchecked")
-    private static <E> JsonMapper<E> getMapper(ParameterizedType<E> type, SimpleArrayMap<ParameterizedType, JsonMapper> partialMappers) {
+    private static <E> FlatBufferMapper<E> getMapper(ParameterizedType<E> type, SimpleArrayMap<ParameterizedType, FlatBufferMapper> partialMappers) {
         if (type.typeParameters.size() == 0) {
             return getMapper((Class<E>) type.rawType);
         }
 
         if (partialMappers == null) {
-            partialMappers = new SimpleArrayMap<ParameterizedType, JsonMapper>();
+            partialMappers = new SimpleArrayMap<ParameterizedType, FlatBufferMapper>();
         }
 
         if (partialMappers.containsKey(type)) {
@@ -357,7 +259,7 @@ public class FlatBuffersX {
                 for (int i = 0; i < type.typeParameters.size(); i++) {
                     args[i + 1] = type.typeParameters.get(i);
                 }
-                JsonMapper<E> mapper = (JsonMapper<E>) constructor.newInstance(args);
+                FlatBufferMapper<E> mapper = (FlatBufferMapper<E>) constructor.newInstance(args);
                 PARAMETERIZED_OBJECT_MAPPERS.put(type, mapper);
                 return mapper;
             } catch (Exception ignored) {
@@ -391,10 +293,18 @@ public class FlatBuffersX {
      *
      * @param cls The class for which the JsonMapper should be fetched.
      */
-    public static <E> JsonMapper<E> mapperFor(Class<E> cls) throws NoSuchMapperException {
-        JsonMapper<E> mapper = getMapper(cls);
+    public static <E> FlatBufferMapper<E> mapperFor(Class<E> cls) throws NoSuchMapperException {
+        FlatBufferMapper<E> mapper = getMapper(cls);
 
         if (mapper == null) {
+            try {
+                OBJECT_MAPPERS.put(cls, (FlatBufferMapper) cls.newInstance());
+                return OBJECT_MAPPERS.get(cls);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
             throw new NoSuchMapperException(cls);
         } else {
             return mapper;
@@ -407,12 +317,12 @@ public class FlatBuffersX {
      * @param type The ParameterizedType for which the JsonMapper should be fetched.
      */
     @SuppressWarnings("unchecked")
-    public static <E> JsonMapper<E> mapperFor(ParameterizedType<E> type) throws NoSuchMapperException {
+    public static <E> FlatBufferMapper<E> mapperFor(ParameterizedType<E> type) throws NoSuchMapperException {
         return mapperFor(type, null);
     }
 
-    public static <E> JsonMapper<E> mapperFor(ParameterizedType<E> type, SimpleArrayMap<ParameterizedType, JsonMapper> partialMappers) throws NoSuchMapperException {
-        JsonMapper<E> mapper = getMapper(type, partialMappers);
+    public static <E> FlatBufferMapper<E> mapperFor(ParameterizedType<E> type, SimpleArrayMap<ParameterizedType, FlatBufferMapper> partialMappers) throws NoSuchMapperException {
+        FlatBufferMapper<E> mapper = getMapper(type, partialMappers);
         if (mapper == null) {
             throw new NoSuchMapperException(type.rawType);
         } else {
@@ -427,8 +337,17 @@ public class FlatBuffersX {
      */
     @SuppressWarnings("unchecked")
     public static <E> TypeConverter<E> typeConverterFor(Class<E> cls) throws NoSuchTypeConverterException {
+
         TypeConverter<E> typeConverter = TYPE_CONVERTERS.get(cls);
         if (typeConverter == null) {
+            try {
+                TYPE_CONVERTERS.put(cls, (TypeConverter) cls.newInstance());
+                return TYPE_CONVERTERS.get(cls);
+            } catch (InstantiationException e) {
+                //  e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // e.printStackTrace();
+            }
             throw new NoSuchTypeConverterException(cls);
         }
         return typeConverter;
@@ -444,20 +363,5 @@ public class FlatBuffersX {
         TYPE_CONVERTERS.put(cls, converter);
     }
 
-    /**
-     * list to response
-     *
-     * @param list
-     * @param <E>
-     * @return {"code":0,"data":[{"description":"xxxxx"},{"description":"xxxxx"}]}
-     */
-    public static <E> String serializeListSimple(List<E> list) {
 
-        try {
-            SimpleListResponseMapper jsonObjectMapper = (SimpleListResponseMapper) mapperFor(SimpleListResponse.class);
-            return jsonObjectMapper.serialize(list);
-        } catch (IOException e) {
-            return null;
-        }
-    }
 }

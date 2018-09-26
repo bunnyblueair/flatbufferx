@@ -22,16 +22,32 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
 }
-
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test{
+        java {
+            srcDirs = ['src/test/java','build/generated/source/apt/main']
+        }
+    }
+}
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    apt project(":processor")
+    annotationProcessor project(":processor")
+    compileOnly project(":processor")
+
 //    } else {
 //        apt project(":processor")
 //    }
     // LoganSquare runtime library
     compile project(':core')
     // Jackson libraries for comparison
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.6'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.7'
 }

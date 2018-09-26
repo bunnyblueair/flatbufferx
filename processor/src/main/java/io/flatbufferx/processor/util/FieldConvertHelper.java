@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 public class FieldConvertHelper {
 
     private static Pattern linePattern = Pattern.compile("_(\\w)");
+    private static Pattern humpPattern = Pattern.compile("[A-Z]");
 
     /**
      * 下划线转驼峰
@@ -24,10 +25,8 @@ public class FieldConvertHelper {
         return sb.toString();
     }
 
-    private static Pattern humpPattern = Pattern.compile("[A-Z]");
-
     /**
-     * 驼峰转下划线,效率比上面高
+     *
      */
     public static String humpToLine2(String str) {
         Matcher matcher = humpPattern.matcher(str);

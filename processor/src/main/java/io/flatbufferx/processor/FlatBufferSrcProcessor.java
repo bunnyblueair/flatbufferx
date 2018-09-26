@@ -55,7 +55,7 @@ public class FlatBufferSrcProcessor extends Processor {
     }
 
     private void processJsonObjectAnnotation(Element element, Map<String, JsonObjectHolder> jsonObjectMap, Elements elements, Types types) {
-        TypeElement typeElement = (TypeElement)element;
+        TypeElement typeElement = (TypeElement) element;
 
         if (element.getModifiers().contains(PRIVATE)) {
             error(element, "%s: %s annotation can't be used on private classes.", typeElement.getQualifiedName(), FlatBufferSrc.class.getSimpleName());
@@ -73,7 +73,7 @@ public class FlatBufferSrcProcessor extends Processor {
 
             TypeMirror superclass = typeElement.getSuperclass();
             if (superclass.getKind() != TypeKind.NONE) {
-                TypeElement superclassElement = (TypeElement)types.asElement(superclass);
+                TypeElement superclassElement = (TypeElement) types.asElement(superclass);
                 if (superclassElement.getAnnotation(FlatBufferSrc.class) != null) {
                     if (superclassElement.getTypeParameters() != null) {
                         parentTypeParameters = superclassElement.getTypeParameters();
@@ -88,7 +88,7 @@ public class FlatBufferSrcProcessor extends Processor {
                 }
             }
             while (superclass.getKind() != TypeKind.NONE) {
-                TypeElement superclassElement = (TypeElement)types.asElement(superclass);
+                TypeElement superclassElement = (TypeElement) types.asElement(superclass);
 
                 if (superclassElement.getAnnotation(FlatBufferSrc.class) != null) {
                     String superclassPackageName = elements.getPackageOf(superclassElement).getQualifiedName().toString();
@@ -160,12 +160,13 @@ public class FlatBufferSrcProcessor extends Processor {
             }
         }
     }
-    private void processCreate(Element enclosedElement,JsonObjectHolder objectHolder){
+
+    private void processCreate(Element enclosedElement, JsonObjectHolder objectHolder) {
 
         HashMap<String, Object> args = new HashMap<>();
         List<Symbol.VarSymbol> params = ((Symbol.MethodSymbol) enclosedElement).getParameters();
         objectHolder.createFlatBufferMethodArgs = params;
-        objectHolder.createMethod= (Symbol.MethodSymbol) enclosedElement;
+        objectHolder.createMethod = (Symbol.MethodSymbol) enclosedElement;
         for (int i = 0; i < params.size(); i++) {
             if (i == 0) {
 
@@ -176,16 +177,16 @@ public class FlatBufferSrcProcessor extends Processor {
             } else {
 
             }
-//          /
-            //  var((Symbol.MethodSymbol) enclosedElement).getParameters().get(1).type.isPrimitive()Symbol.getty
+
         }
 
     }
+
     private void filterAllFlatBuffer(Element element, Elements elements, Types types, JsonObjectHolder objectHolder) {
         List<? extends Element> enclosedElements = element.getEnclosedElements();
-      ClassName builderClazz=  ClassName.get(FlatBufferBuilder.class);
-        ClassName xClass=  ClassName.bestGuess(objectHolder.injectedClassName);
-        String targetMethod="create"+element.getSimpleName();
+        ClassName builderClazz = ClassName.get(FlatBufferBuilder.class);
+        ClassName xClass = ClassName.bestGuess(objectHolder.injectedClassName);
+        String targetMethod = "create" + element.getSimpleName();
         HashSet<String> arrayList = new HashSet<>();
         for (Element enclosedElement : enclosedElements) {
 
@@ -206,57 +207,38 @@ public class FlatBufferSrcProcessor extends Processor {
 
         //createReposVector
         for (Element enclosedElement : enclosedElements) {
-            if (enclosedElement.getSimpleName().toString().equals(targetMethod)){
-                System.err.println("find create");
+            if (enclosedElement.getSimpleName().toString().equals(targetMethod)) {
                 processCreate(enclosedElement, objectHolder);
 
                 //
                 continue;
             }
-            if ("__init".contentEquals(enclosedElement.getSimpleName())||"__assign".contentEquals(enclosedElement.getSimpleName())){
+            if ("__init".contentEquals(enclosedElement.getSimpleName()) || "__assign".contentEquals(enclosedElement.getSimpleName())) {
                 continue;
             }
-          if (enclosedElement instanceof Symbol.MethodSymbol ){
-              if (enclosedElement.getKind()== ElementKind.CONSTRUCTOR){
-                  continue;
-              }
-           //   if (enclosedElement.g)
-              Symbol.MethodSymbol methodSymbol= (Symbol.MethodSymbol) enclosedElement;
-              if (!methodSymbol.getModifiers().contains(Modifier.STATIC)){
-                  if (methodSymbol.getReturnType().toString().equals(ByteBuffer.class.getName())){
-                      continue;
-                  }
-                  System.err.println(methodSymbol.getSimpleName());
-                  String targetVector = FieldConvertHelper.lineToHump(String.format("create_%s_vector", methodSymbol.getSimpleName()));
-                  boolean methodShouldList = false;
-                  if (arrayList.contains(targetVector)) {
-                      methodShouldList = true;
-                  }
-                  createOrUpdateFieldHolder2(elements, types, objectHolder, methodSymbol, methodShouldList);
-              }
-          }
-//            if (enclosedElement.getSimpleName().equals(targetMethod)){
-//                Symbol.MethodSymbol createFlatBuffer= (Symbol.MethodSymbol) enclosedElement;
-//                for (int i = 0; i < createFlatBuffer.getParameters().length() ; i++) {
-//                Symbol.VarSymbol varSymbol= createFlatBuffer.getParameters().get(i);
-//                }
-//            }
-//            ElementKind enclosedElementKind = enclosedElement.getKind();
-//            if (enclosedElementKind == ElementKind.FIELD) {
-//                Set<Modifier> modifiers = enclosedElement.getModifiers();
-//
-//                if (modifiers.contains(Modifier.PRIVATE) && !modifiers.contains(Modifier.TRANSIENT) && !modifiers.contains(Modifier.STATIC)) {
-//
-//                    String getter = JsonFieldHolder.getGetter(enclosedElement, elements);
-//                    String setter = JsonFieldHolder.getSetter(enclosedElement, elements);
-//
-//                    if (!TextUtils.isEmpty(getter) && !TextUtils.isEmpty(setter)) {
-//                        createOrUpdateFieldHolder(enclosedElement, elements, types, objectHolder);
-//                    }
-//                }
-//            }
+            if (enclosedElement instanceof Symbol.MethodSymbol) {
+                if (enclosedElement.getKind() == ElementKind.CONSTRUCTOR) {
+                    continue;
+                }
+                //   if (enclosedElement.g)
+                Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) enclosedElement;
+                if (!methodSymbol.getModifiers().contains(Modifier.STATIC)) {
+                    if (methodSymbol.getReturnType().toString().equals(ByteBuffer.class.getName())) {
+                        continue;
+                    }
+
+                    String targetVector = FieldConvertHelper.lineToHump(String.format("create_%s_vector", methodSymbol.getSimpleName()));
+                    boolean methodShouldList = false;
+                    if (arrayList.contains(targetVector)) {
+                        methodShouldList = true;
+                    }
+                    createOrUpdateFieldHolderForFlatBuffer(elements, types, objectHolder, methodSymbol, methodShouldList);
+                }
+            }
+
         }
     }
+
     private void createOrUpdateFieldHolder(Element element, Elements elements, Types types, JsonObjectHolder objectHolder) {
         JsonIgnore ignoreAnnotation = element.getAnnotation(JsonIgnore.class);
         boolean shouldParse = ignoreAnnotation == null || ignoreAnnotation.ignorePolicy() == JsonIgnore.IgnorePolicy.SERIALIZE_ONLY;
@@ -276,22 +258,20 @@ public class FlatBufferSrcProcessor extends Processor {
         }
     }
 
-    private void createOrUpdateFieldHolder2(Elements elements, Types types, JsonObjectHolder objectHolder, Symbol.MethodSymbol enclosedElement, boolean methodShouldList) {
-      //  JsonIgnore ignoreAnnotation = element.getAnnotation(JsonIgnore.class);
+    private void createOrUpdateFieldHolderForFlatBuffer(Elements elements, Types types, JsonObjectHolder objectHolder, Symbol.MethodSymbol enclosedElement, boolean methodShouldList) {
 
-
-            JsonFieldHolder fieldHolder = objectHolder.fieldMap.get(enclosedElement.getSimpleName().toString());
-            if (fieldHolder == null) {
-                fieldHolder = new JsonFieldHolder();
-                objectHolder.fieldMap.put(enclosedElement.getSimpleName().toString(), fieldHolder);
-            }
+        JsonFieldHolder fieldHolder = objectHolder.fieldMap.get(enclosedElement.getSimpleName().toString());
+        if (fieldHolder == null) {
+            fieldHolder = new JsonFieldHolder();
+            objectHolder.fieldMap.put(enclosedElement.getSimpleName().toString(), fieldHolder);
+        }
 
         String error = fieldHolder.fillWithMethod(elements, types, enclosedElement, null, objectHolder, true, true,
                 true,
                 methodShouldList);
-            if (!TextUtils.isEmpty(error)) {
-                error(enclosedElement, error);
-            }
+        if (!TextUtils.isEmpty(error)) {
+            error(enclosedElement, error);
+        }
 
     }
 }

@@ -1,10 +1,10 @@
 package io.flatbufferx.processor.type.field;
 
-import io.flatbufferx.core.Constants;
-import io.flatbufferx.processor.processor.ObjectMapperInjector;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeName;
+import io.flatbufferx.core.Constants;
+import io.flatbufferx.processor.processor.ObjectMapperInjector;
 
 import java.util.List;
 import java.util.Set;

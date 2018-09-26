@@ -1,0 +1,6 @@
+include "sub/include_test2.fbs";
+
+
+table TableA {
+  b:MyGame.OtherNameSpace.TableB;
+}

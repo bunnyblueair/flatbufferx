@@ -1,8 +1,8 @@
 package io.flatbufferx.processor.type.collection;
 
+import com.squareup.javapoet.ClassName;
 import io.flatbufferx.processor.processor.TypeUtils;
 import io.flatbufferx.processor.type.Type;
-import com.squareup.javapoet.ClassName;
 
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -12,9 +12,9 @@ public abstract class CollectionType extends Type {
 
     public static CollectionType collectionTypeFor(TypeMirror typeMirror, TypeMirror genericClassTypeMirror, Elements elements, Types types) {
         CollectionType collectionType = null;
-        
+
         String typeMirrorInfo = genericClassTypeMirror.toString().replaceAll("<.*>", "");
-        
+
         switch (typeMirrorInfo) {
             case "java.util.List":
             case "java.util.ArrayList":

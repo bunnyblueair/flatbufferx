@@ -3,30 +3,23 @@ package io.flatbufferx.processor;
 import io.flatbufferx.core.annotation.JsonField;
 import io.flatbufferx.core.annotation.JsonIgnore;
 import io.flatbufferx.core.annotation.JsonIgnore.IgnorePolicy;
-import io.flatbufferx.core.annotation.JsonObject;
+import io.flatbufferx.core.typeconverters.TypeConverter;
 import io.flatbufferx.processor.processor.JsonFieldHolder;
 import io.flatbufferx.processor.processor.JsonObjectHolder;
 import io.flatbufferx.processor.processor.TextUtils;
 import io.flatbufferx.processor.processor.TypeUtils;
-import io.flatbufferx.core.typeconverters.TypeConverter;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
 
@@ -60,7 +53,7 @@ public class JsonFieldProcessor extends Processor {
             return;
         }
 
-        TypeElement enclosingElement = (TypeElement)element.getEnclosingElement();
+        TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
         JsonObjectHolder objectHolder = jsonObjectMap.get(TypeUtils.getInjectedFQCN(enclosingElement, elements));
         JsonFieldHolder fieldHolder = objectHolder.fieldMap.get(element.getSimpleName().toString());
@@ -96,11 +89,11 @@ public class JsonFieldProcessor extends Processor {
     private boolean isJsonFieldFieldAnnotationValid(Element element, Elements elements) {
         TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
-        Annotation objectAnnotation = enclosingElement.getAnnotation(JsonObject.class);
-        if (objectAnnotation == null) {
-            error(enclosingElement, "%s: @%s fields can only be in classes annotated with @%s.", enclosingElement.getQualifiedName(), JsonField.class.getSimpleName(), JsonObject.class.getSimpleName());
-            return false;
-        }
+//        Annotation objectAnnotation = enclosingElement.getAnnotation(JsonObject.class);
+//        if (objectAnnotation == null) {
+//            error(enclosingElement, "%s: @%s fields can only be in classes annotated with @%s.", enclosingElement.getQualifiedName(), JsonField.class.getSimpleName(), JsonObject.class.getSimpleName());
+//            return false;
+//        }
 
         if (element.getModifiers().contains(PRIVATE) && (TextUtils.isEmpty(JsonFieldHolder.getGetter(element, elements)) || TextUtils.isEmpty(JsonFieldHolder.getSetter(element, elements)))) {
             error(element, "@%s annotation can only be used on private fields if both getter and setter are present.", JsonField.class.getSimpleName());
@@ -147,7 +140,7 @@ public class JsonFieldProcessor extends Processor {
                 if (enclosedElementKind == ElementKind.CONSTRUCTOR) {
                     constructorIsDeclared = true;
                     if (!enclosedElement.getModifiers().contains(Modifier.PRIVATE)) {
-                        ExecutableElement executableElement = (ExecutableElement)enclosedElement;
+                        ExecutableElement executableElement = (ExecutableElement) enclosedElement;
 
                         if (executableElement.getParameters().size() == 0) {
                             hasAccessibleConstructor = true;

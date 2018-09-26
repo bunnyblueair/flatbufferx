@@ -1,15 +1,15 @@
 package io.flatbufferx.core.objectmappers;
 
-import io.flatbufferx.core.JsonMapper;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import io.flatbufferx.core.FlatBufferMapper;
 
 import java.io.IOException;
 
 /**
  * Built-in mapper for String objects
  */
-public class StringMapper extends JsonMapper<String> {
+public class StringMapper extends FlatBufferMapper<String> {
 
     @Override
     public String parse(JsonParser jsonParser) throws IOException {
@@ -17,7 +17,8 @@ public class StringMapper extends JsonMapper<String> {
     }
 
     @Override
-    public void parseField(String instance, String fieldName, JsonParser jsonParser) throws IOException { }
+    public void parseField(String instance, String fieldName, JsonParser jsonParser) throws IOException {
+    }
 
     @Override
     public void serialize(String object, JsonGenerator generator, boolean writeStartAndEnd) throws IOException {

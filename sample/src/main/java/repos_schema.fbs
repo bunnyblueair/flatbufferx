@@ -1,0 +1,21 @@
+namespace io.flatbutterx.sample;
+
+table ReposList {
+    repos : [Repo];
+}
+
+table Repo {
+    id : long;
+    name : string;
+    full_name : string;
+    owner : User;
+    html_url : string;
+    description : string;
+}
+
+table User {
+    login : string;
+    id : long;
+}
+
+root_type ReposList;
