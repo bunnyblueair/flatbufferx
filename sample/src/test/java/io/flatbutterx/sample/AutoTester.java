@@ -46,8 +46,16 @@ public class AutoTester {
         }
 
         String data = FlatBuffersX.serialize(reposListFB1);
+        //  reposListFB1
         //   String data=  reposListFB1.serialize(reposListFB1);
         System.out.println(data);
+        ReposListFB reposListFB2 = new ReposListFB();
+        try {
+            ReposListFB reposListFB3 = reposListFB2.parse(data);
+            System.out.println(reposListFB3);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //  RepoFB
     }
 }
