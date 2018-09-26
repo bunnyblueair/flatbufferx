@@ -342,19 +342,15 @@ public class ObjectMapperInjector {
             Symbol.VarSymbol agrVarSymbol = mJsonObjectHolder.createFlatBufferMethodArgs.get(i);
             if (i == 0) {
                 stringBuffer.append("$N,");
-                //    args[i+1] = i;
                 continue;
             }
-            // agrVarSymbol.getSimpleName().toString()
             String name = FieldConvertHelper.lineToHump(agrVarSymbol.getSimpleName().toString());
             if (mJsonObjectHolder.fieldMap.containsKey(name)) {
-                JsonFieldHolder jsonFieldHolder = mJsonObjectHolder.fieldMap.get(name);
-                // builder.addStatement("object.$L",name);
                 stringBuffer.append("$L,");
                 args[i] = CodeBlock.of("this.$L", name);
             } else {
                 String nameFix = name.substring(0, name.lastIndexOf("offset"));
-                System.err.println("==" + nameFix);
+
                 stringBuffer.append("$L,");
                 //if (nameFix)
                 JsonFieldHolder jsonFieldHolder = mJsonObjectHolder.fieldMap.get(nameFix);
@@ -381,16 +377,13 @@ public class ObjectMapperInjector {
                     continue;
                 }
                 if (jsonFieldHolder.type instanceof DynamicFieldType) {
-                    //this.owner.toFlatBufferOffset(bufferBuilder)
+
 
                     args[i] = CodeBlock.of("$N.toFlatBufferOffset(bufferBuilder)", nameFix);
                     continue;
                 }
 
-//                if (nameFix.equalsIgnoreCase("owner")) {
-//                    //todo fixme
-//                    args[i] = i;
-//                }
+
             }
 
 

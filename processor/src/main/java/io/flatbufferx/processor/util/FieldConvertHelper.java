@@ -26,7 +26,7 @@ public class FieldConvertHelper {
     }
 
     /**
-     * 驼峰转下划线,效率比上面高
+     *
      */
     public static String humpToLine2(String str) {
         Matcher matcher = humpPattern.matcher(str);

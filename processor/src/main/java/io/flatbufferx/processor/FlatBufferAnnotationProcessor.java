@@ -101,7 +101,7 @@ public class FlatBufferAnnotationProcessor extends AbstractProcessor {
         } catch (Throwable e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
-            error("Exception while processing Json classes. Stack trace incoming:\n%s", stackTrace.toString());
+            error("Exception while processing flatbuffers classes. Stack trace incoming:\n%s", stackTrace.toString());
             return false;
         }
     }

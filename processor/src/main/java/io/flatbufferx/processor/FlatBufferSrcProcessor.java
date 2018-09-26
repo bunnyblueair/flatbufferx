@@ -177,8 +177,7 @@ public class FlatBufferSrcProcessor extends Processor {
             } else {
 
             }
-//          /
-            //  var((Symbol.MethodSymbol) enclosedElement).getParameters().get(1).type.isPrimitive()Symbol.getty
+
         }
 
     }
@@ -209,7 +208,6 @@ public class FlatBufferSrcProcessor extends Processor {
         //createReposVector
         for (Element enclosedElement : enclosedElements) {
             if (enclosedElement.getSimpleName().toString().equals(targetMethod)) {
-                System.err.println("find create");
                 processCreate(enclosedElement, objectHolder);
 
                 //
@@ -228,35 +226,16 @@ public class FlatBufferSrcProcessor extends Processor {
                     if (methodSymbol.getReturnType().toString().equals(ByteBuffer.class.getName())) {
                         continue;
                     }
-                    System.err.println(methodSymbol.getSimpleName());
+
                     String targetVector = FieldConvertHelper.lineToHump(String.format("create_%s_vector", methodSymbol.getSimpleName()));
                     boolean methodShouldList = false;
                     if (arrayList.contains(targetVector)) {
                         methodShouldList = true;
                     }
-                    createOrUpdateFieldHolder2(elements, types, objectHolder, methodSymbol, methodShouldList);
+                    createOrUpdateFieldHolderForFlatBuffer(elements, types, objectHolder, methodSymbol, methodShouldList);
                 }
             }
-//            if (enclosedElement.getSimpleName().equals(targetMethod)){
-//                Symbol.MethodSymbol createFlatBuffer= (Symbol.MethodSymbol) enclosedElement;
-//                for (int i = 0; i < createFlatBuffer.getParameters().length() ; i++) {
-//                Symbol.VarSymbol varSymbol= createFlatBuffer.getParameters().get(i);
-//                }
-//            }
-//            ElementKind enclosedElementKind = enclosedElement.getKind();
-//            if (enclosedElementKind == ElementKind.FIELD) {
-//                Set<Modifier> modifiers = enclosedElement.getModifiers();
-//
-//                if (modifiers.contains(Modifier.PRIVATE) && !modifiers.contains(Modifier.TRANSIENT) && !modifiers.contains(Modifier.STATIC)) {
-//
-//                    String getter = JsonFieldHolder.getGetter(enclosedElement, elements);
-//                    String setter = JsonFieldHolder.getSetter(enclosedElement, elements);
-//
-//                    if (!TextUtils.isEmpty(getter) && !TextUtils.isEmpty(setter)) {
-//                        createOrUpdateFieldHolder(enclosedElement, elements, types, objectHolder);
-//                    }
-//                }
-//            }
+
         }
     }
 
@@ -279,9 +258,7 @@ public class FlatBufferSrcProcessor extends Processor {
         }
     }
 
-    private void createOrUpdateFieldHolder2(Elements elements, Types types, JsonObjectHolder objectHolder, Symbol.MethodSymbol enclosedElement, boolean methodShouldList) {
-        //  JsonIgnore ignoreAnnotation = element.getAnnotation(JsonIgnore.class);
-
+    private void createOrUpdateFieldHolderForFlatBuffer(Elements elements, Types types, JsonObjectHolder objectHolder, Symbol.MethodSymbol enclosedElement, boolean methodShouldList) {
 
         JsonFieldHolder fieldHolder = objectHolder.fieldMap.get(enclosedElement.getSimpleName().toString());
         if (fieldHolder == null) {
