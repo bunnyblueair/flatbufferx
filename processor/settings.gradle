@@ -1,4 +1,4 @@
 include ':stub'
-project(':stub').projectDir = new File('../stub')
+project(':stub').projectDir = file('../stub')
 include ':core'
-project(':core').projectDir = new File('../core')
+project(':core').projectDir = file('../core')

@@ -4,8 +4,8 @@ include ':core'
 project(':core').projectDir = new File('core')
 //,':benchmarkDemo'
 include ':sample'
-include ':processor'
-project(':processor').projectDir = new File('processor')
+include ':processorFlat'
+project(':processorFlat').projectDir = new File('processor')
 if ("true"==System.getenv("enable_android")){
     include 'benchmarkDemo'
 }
