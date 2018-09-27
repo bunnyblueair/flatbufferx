@@ -10,6 +10,11 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
+repositories {
+    google()
+    jcenter()
+
+}
 
 //import com.android.builder.Version
 //
@@ -57,7 +62,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // LoganSquare annotation processor
     // if (androidBuildToolVersion() == 3) {
-    annotationProcessor project(":processor")
+    annotationProcessor project(":processorFlat")
 //    } else {
 //        apt project(":processor")
 //    }

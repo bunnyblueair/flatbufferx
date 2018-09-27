@@ -1,6 +1,11 @@
-include ':core',':processor'
+include ':stub'
+project(':stub').projectDir = new File('stub')
+include ':core'
+project(':core').projectDir = new File('core')
 //,':benchmarkDemo'
-include 'sample'
+include ':sample'
+include ':processorFlat'
+project(':processorFlat').projectDir = new File('processor')
 if ("true"==System.getenv("enable_android")){
     include 'benchmarkDemo'
 }

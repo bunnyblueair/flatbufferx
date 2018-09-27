@@ -1,22 +1,6 @@
-//buildscript {
-//    repositories {
-//        jcenter()
-//        google()
-//    }
-//    dependencies {
-//      //  classpath 'com.android.tools.build:gradle:3.1.4'
-//        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-//    }
-//}
-plugins {
-    id 'java'
-    id 'idea'
-    id "net.ltgt.apt" version "0.18"
-}
-
 group 'io.flatbufferx'
 
-
+apply  plugin :'java'
 sourceCompatibility = 1.8
 
 repositories {
@@ -39,8 +23,8 @@ sourceSets {
 }
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    annotationProcessor project(":processor")
-    compileOnly project(":processor")
+//    annotationProcessor project(":processor")
+    annotationProcessor project(":processorFlat")
 
 //    } else {
 //        apt project(":processor")
