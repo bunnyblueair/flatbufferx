@@ -3,12 +3,12 @@ apply plugin: 'java'
 ext.artifactId = 'core'
 version '1.0.0'
 sourceCompatibility = 1.7
-targetCompatibility = 1.7
+targetCompatibility = 1.8
 dependencies {
     compile 'com.fasterxml.jackson.core:jackson-core:2.9.7'
     compile group: 'com.google.flatbuffers', name: 'flatbuffers-java', version: '1.9.0'
 
     compileOnly fileTree(include: ['*.jar'], dir: 'libs')
-    compileOnly files('libs/api.jar')
+  //  compileOnly files('libs/api.jar')
 }
 apply from: "../dist.gradle"
