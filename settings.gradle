@@ -6,6 +6,9 @@ project(':core').projectDir = new File('core')
 include ':sample'
 include ':processorFlat'
 project(':processorFlat').projectDir = new File('processor')
-if ("true"==System.getenv("enable_android")){
-    include 'benchmarkDemo'
-}
+//if ("true"==System.getenv("enable_android")){
+  //  include 'benchmarkDemo'
+//}
+include 'IDEAPlugin'
+project(':IDEAPlugin').projectDir=new File("IDEAPlugin")
+
