@@ -21,4 +21,4 @@ jdk:
   - oraclejdk8
 
 script:
-  - ./gradlew assembleDebug
+  - cd sample && ../gradlew assemble
